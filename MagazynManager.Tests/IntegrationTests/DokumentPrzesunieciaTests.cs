@@ -1,0 +1,153 @@
+﻿using MagazynManager.Domain.Entities.Slowniki;
+using MagazynManager.Infrastructure.InputModel.Ewidencja;
+using MagazynManager.Tests.IntegrationTests.ApiCallers;
+using MagazynManager.Tests.ObjectMothers;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+using static MagazynManager.Tests.Technical.JsonSerializerUtils;
+
+namespace MagazynManager.Tests.IntegrationTests
+{
+    [TestFixture]
+    public class DokumentPrzesunieciaTests : AuthorizedTest
+    {
+        [Test]
+        public async Task ProbaPrzesunieciaNieistniejacegoTowaru()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var magazynApiCaller = new MagazynApiCaller(client);
+
+            var tokens = await Authenticate(client).ConfigureAwait(false);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.Token);
+
+            var magazynWydaniaId = await magazynApiCaller.DodajMagazyn(MagazynObjectMother.GetMagazyn());
+            var magazynPrzyjeciaId = await magazynApiCaller.DodajMagazyn(MagazynObjectMother.GetMagazyn());
+
+            var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynWydaniaId));
+
+            await new PrzyjecieApiCaller(client).Przyjmij(new PrzyjecieCreateModel
+            {
+                MagazynId = magazynWydaniaId,
+                Data = DateTime.Now,
+                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
+                {
+                    new PrzyjeciePozycjaDokumentuCreateModel
+                    {
+                        ProduktId = produktId,
+                        CenaNetto = 1M,
+                        Ilosc = 10,
+                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
+                    }
+                }
+            });
+
+            var przesuniecieModel = new PrzesuniecieCreateModel
+            {
+                MagazynWydajacyId = magazynWydaniaId,
+                MagazynPrzyjmujacyId = magazynPrzyjeciaId,
+                Data = DateTime.Now,
+                Pozycje = new List<PozycjaWydaniaModel>
+                {
+                    new PozycjaWydaniaModel
+                    {
+                        ProduktId = produktId,
+                        Ilosc = 10
+                    }
+                }
+            };
+
+            await new PrzesuniecieApiCaller(client).Przesun(przesuniecieModel);
+
+            //Act
+            var przesuniecieModel2 = new PrzesuniecieCreateModel
+            {
+                MagazynWydajacyId = magazynWydaniaId,
+                MagazynPrzyjmujacyId = magazynPrzyjeciaId,
+                Data = DateTime.Now,
+                Pozycje = new List<PozycjaWydaniaModel>
+                {
+                    new PozycjaWydaniaModel
+                    {
+                        ProduktId = produktId,
+                        Ilosc = 1
+                    }
+                }
+            };
+
+            var serializerSettings = GetNodaTimeSerializerSettings();
+            var content = new StringContent(JsonConvert.SerializeObject(przesuniecieModel2, serializerSettings), Encoding.UTF8, "application/json");
+            var result = await client.PostAsync("Przesuniecie/Przesun", content).ConfigureAwait(false);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+
+            var contentString = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            Assert.That(contentString, Is.EqualTo("Niewystarczający stan magazynowy"));
+        }
+
+        [Test]
+        public async Task CheckStanAktualnyAfterPrzesuniecie()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var magazynApiCaller = new MagazynApiCaller(client);
+
+            var tokens = await Authenticate(client).ConfigureAwait(false);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.Token);
+
+            var magazynWydaniaId = await magazynApiCaller.DodajMagazyn(MagazynObjectMother.GetMagazyn());
+            var magazynPrzyjeciaId = await magazynApiCaller.DodajMagazyn(MagazynObjectMother.GetMagazyn());
+            var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynWydaniaId));
+
+            await new PrzyjecieApiCaller(client).Przyjmij(new PrzyjecieCreateModel
+            {
+                MagazynId = magazynWydaniaId,
+                Data = DateTime.Now,
+                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
+                {
+                    new PrzyjeciePozycjaDokumentuCreateModel
+                    {
+                        ProduktId = produktId,
+                        CenaNetto = 1M,
+                        Ilosc = 10,
+                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
+                    }
+                }
+            });
+
+            var przesuniecieModel = new PrzesuniecieCreateModel
+            {
+                MagazynWydajacyId = magazynWydaniaId,
+                MagazynPrzyjmujacyId = magazynPrzyjeciaId,
+                Data = DateTime.Now,
+                Pozycje = new List<PozycjaWydaniaModel>
+                {
+                    new PozycjaWydaniaModel
+                    {
+                        ProduktId = produktId,
+                        Ilosc = 7
+                    }
+                }
+            };
+
+            var stanAktualnyApiCaller = new StanAktualnyApiCaller(client);
+
+            await new PrzesuniecieApiCaller(client).Przesun(przesuniecieModel);
+
+            var stanyWydane = await stanAktualnyApiCaller.GetStanAktualny(magazynWydaniaId);
+            Assert.That(stanyWydane, Has.Count.EqualTo(1));
+            Assert.That(stanyWydane.First().Ilosc, Is.EqualTo(3));
+
+            var stanyPrzyjete = await stanAktualnyApiCaller.GetStanAktualny(magazynPrzyjeciaId);
+            Assert.That(stanyPrzyjete, Has.Count.EqualTo(1));
+            Assert.That(stanyPrzyjete.First().Ilosc, Is.EqualTo(7));
+        }
+    }
+}

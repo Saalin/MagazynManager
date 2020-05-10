@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="MagazynManager.Domain.Entities.Produkty.JednostkaMiary">
+    <Position X="9.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Entities\Produkty\JednostkaMiary.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MagazynManager.Domain.Entities.Produkty.Kategoria">
+    <Position X="15.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Entities\Produkty\Kategoria.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MagazynManager.Domain.Entities.Produkty.Produkt">
+    <Position X="12.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAACAAAAAACAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Entities\Produkty\Produkt.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="JednostkaMiary" />
+      <Property Name="Kategoria" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
