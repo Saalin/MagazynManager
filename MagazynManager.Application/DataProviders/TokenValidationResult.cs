@@ -1,11 +1,8 @@
 ﻿namespace MagazynManager.Application.DataProviders
 {
-    public partial class TokenManager
+    public class TokenValidationResult
     {
-        public class TokenValidationResult
-        {
-            public bool IsValid { get; set; }
-            public IdentificationAggregate Identity { get; set; }
-        }
+        public bool IsValid { get; set; }
+        public IdentificationAggregate Identity { get; set; }
     }
 }

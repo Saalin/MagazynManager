@@ -8,7 +8,7 @@ using System.Text;
 
 namespace MagazynManager.Application.DataProviders
 {
-    public partial class TokenManager
+    public class TokenManager
     {
         private readonly string _key;
 

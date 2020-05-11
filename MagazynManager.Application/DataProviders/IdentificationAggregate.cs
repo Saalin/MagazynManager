@@ -2,12 +2,9 @@
 
 namespace MagazynManager.Application.DataProviders
 {
-    public partial class TokenManager
+    public class IdentificationAggregate
     {
-        public class IdentificationAggregate
-        {
-            public Guid UserId { get; set; }
-            public Guid PrzedsiebiorstwoId { get; set; }
-        }
+        public Guid UserId { get; set; }
+        public Guid PrzedsiebiorstwoId { get; set; }
     }
 }
