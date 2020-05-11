@@ -1,5 +1,4 @@
 ﻿using MagazynManager.Application.Commands.Slowniki;
-using MagazynManager.Application.QueryHandlers;
 using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
 using MediatR;
 using System;
@@ -27,7 +26,7 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
 
         public async Task<Guid> Handle(MagazynCreateCommand request, CancellationToken cancellationToken)
         {
-            var magazyn = new Magazyn()
+            var magazyn = new Magazyn
             {
                 Id = Guid.NewGuid(),
                 PrzedsiebiorstwoId = request.PrzedsiebiorstwoId,

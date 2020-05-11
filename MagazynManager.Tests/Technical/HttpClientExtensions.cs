@@ -21,7 +21,7 @@ namespace MagazynManager.Tests.Technical
             }
             catch (JsonSerializationException)
             {
-                throw new Exception(listContnet);
+                throw new ApiResponseDeserializationException(listContnet);
             }
         }
 
@@ -39,7 +39,7 @@ namespace MagazynManager.Tests.Technical
             }
             catch (JsonSerializationException)
             {
-                throw new Exception(contentString);
+                throw new ApiResponseDeserializationException(contentString);
             }
         }
 

@@ -10,9 +10,9 @@ namespace MagazynManager.Domain.Entities.Uzytkownicy
     {
         public string Email { get; private set; }
         public int Age { get; private set; }
-        public string PasswordHash { get; private set; }
+        public string PasswordHash { get; }
         public string Salt { get; private set; }
-        public IEnumerable<Claim> Claims { get; private set; }
+        public IEnumerable<Claim> Claims { get; }
         public Guid PrzedsiebiorstwoId { get; }
 
         private User()

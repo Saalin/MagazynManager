@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 using Serilog;
@@ -22,7 +23,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace MagazynManager.Server
 {
@@ -46,11 +46,11 @@ namespace MagazynManager.Server
 
             services
                 .AddControllers(options => options.Filters.Add<CatchEmAllExceptionFilter>())
-                .AddNewtonsoftJson(options => options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb))
-                            .AddJsonOptions(x =>
-                            {
-                                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                            });
+                .AddNewtonsoftJson(options => 
+                {
+                    options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
             services.AddControllers()
                 .AddFluentValidation(fv =>
@@ -67,7 +67,7 @@ namespace MagazynManager.Server
             })
             .AddJwtBearer(cfg =>
             {
-                cfg.TokenValidationParameters = new TokenValidationParameters()
+                cfg.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Token:Key"])),
                     //ValidIssuer = Configuration[“Token: issuer”],
@@ -108,7 +108,7 @@ namespace MagazynManager.Server
                         Scheme = "Bearer"
                     });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                     {
                         {
                             new OpenApiSecurityScheme
@@ -133,7 +133,6 @@ namespace MagazynManager.Server
                 c.IncludeXmlComments(xmlPath);
 
                 c.AddFluentValidationRules();
-                c.DescribeAllEnumsAsStrings();
             });
 
             services.AddSwaggerGenNewtonsoftSupport();

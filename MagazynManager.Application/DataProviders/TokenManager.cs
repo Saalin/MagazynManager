@@ -8,7 +8,7 @@ using System.Text;
 
 namespace MagazynManager.Application.DataProviders
 {
-    public class TokenManager
+    public partial class TokenManager
     {
         private readonly string _key;
 
@@ -17,10 +17,8 @@ namespace MagazynManager.Application.DataProviders
             _key = key;
         }
 
-        public bool ValidateToken(string token, out (Guid?, Guid?) userId_przedsiebiorstwoId)
+        public TokenValidationResult ValidateToken(string token)
         {
-            userId_przedsiebiorstwoId = (null, null);
-
             var key = Encoding.UTF8.GetBytes(_key);
             var handler = new JwtSecurityTokenHandler();
             var validations = new TokenValidationParameters
@@ -32,15 +30,26 @@ namespace MagazynManager.Application.DataProviders
                 ValidateLifetime = false
             };
             var claims = handler.ValidateToken(token, validations, out var tokenSecure);
-            if (claims == null) return false;
+            if (claims == null)
+            {
+                return new TokenValidationResult { IsValid = false };
+            }
             var parseResult = Guid.TryParse(claims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value, out var uzytkownikId);
             Guid.TryParse(claims.Claims.FirstOrDefault(c => c.Type.Contains("PrzedsiebiorstwoId"))?.Value, out var przedsiebiorstwoId);
             if (parseResult)
             {
-                userId_przedsiebiorstwoId = (uzytkownikId, przedsiebiorstwoId);
-                return true;
+                return new TokenValidationResult
+                {
+                    IsValid = true,
+                    Identity = new IdentificationAggregate
+                    {
+                        UserId = uzytkownikId,
+                        PrzedsiebiorstwoId = przedsiebiorstwoId
+                    }
+                };
             }
-            return false;
+
+            return new TokenValidationResult { IsValid = false };
         }
 
         public JwtSecurityToken CreateJWTToken(IEnumerable<Claim> claims)

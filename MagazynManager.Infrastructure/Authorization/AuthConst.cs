@@ -2,8 +2,8 @@
 {
     public static class AuthConst
     {
-        public const string PolicyPrefix = "Permissions";
-        public const string ClaimPrefix = "Permission.";
-        public const string AdminClaim = "User.IsAdmin";
+        public static readonly string PolicyPrefix = "Permissions";
+        public static readonly string ClaimPrefix = "Permission.";
+        public static readonly string AdminClaim = "User.IsAdmin";
     }
 }

@@ -19,9 +19,9 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
             _dbConnectionSource = dbConnectionSource;
         }
 
-        public Task<List<JednostkaMiary>> GetList(Guid id)
+        public Task<List<JednostkaMiary>> GetList(Guid przedsiebiorstwoId)
         {
-            return GetKategorieListAsync(new PrzedsiebiorstwoSpecification<JednostkaMiary>(id));
+            return GetKategorieListAsync(new PrzedsiebiorstwoSpecification<JednostkaMiary>(przedsiebiorstwoId));
         }
 
         private async Task<List<JednostkaMiary>> GetKategorieListAsync(Specification<JednostkaMiary> specification)

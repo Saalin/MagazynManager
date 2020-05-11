@@ -8,7 +8,7 @@ namespace MagazynManager.Domain.Entities.Produkty
     {
         Task<List<JednostkaMiary>> GetList(Guid przedsiebiorstwoId);
 
-        Task<Guid> Save(JednostkaMiary kategoria);
+        Task<Guid> Save(JednostkaMiary jednostkaMiary);
 
         Task Delete(Guid id);
     }
