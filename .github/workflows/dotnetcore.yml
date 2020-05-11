@@ -28,3 +28,8 @@ jobs:
       with:
         token: ${{ secrets.CodeCovToken }}
         file: ./MagazynManager.Tests/coverage.opencover.xml
+    - name: Run codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@master
+      with:
+        project-token: ${{ secrets.CodacyCov }}
+        coverage-reports: ./MagazynManager.Tests/coverage.opencover.xml
