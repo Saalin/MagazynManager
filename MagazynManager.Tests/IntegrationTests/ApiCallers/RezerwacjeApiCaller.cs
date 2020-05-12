@@ -28,5 +28,10 @@ namespace MagazynManager.Tests.IntegrationTests.ApiCallers
         {
             await HttpClient.DeleteAsync($"Rezerwacja/Anuluj/{id}");
         }
+
+        public async Task UsunPrzedawnione()
+        {
+            await HttpClient.DeleteAsync($"Rezerwacja/UsunPrzedawnione");
+        }
     }
 }

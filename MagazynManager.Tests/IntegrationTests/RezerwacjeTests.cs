@@ -69,5 +69,45 @@ namespace MagazynManager.Tests.IntegrationTests
 
             Assert.That(listaRezerwacjiPoUsunieciu, Has.Count.EqualTo(listaRezerwacji.Count - 1));
         }
+
+        [Test]
+        public async Task UsunPrzedawnioneRezerwacje()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var apiCaller = new RezerwacjeApiCaller(client);
+
+            var tokens = await Authenticate(client).ConfigureAwait(false);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.Token);
+
+            var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
+            var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
+
+            var rezerwacja = new RezerwacjaCreateModel
+            {
+                DataRezerwacji = DateTime.Now.AddDays(-14),
+                DataWaznosci = DateTime.Now.AddDays(-7),
+                Opis = string.Empty,
+                Pozycje = new List<PozycjaRezerwacjiCreateModel>
+                {
+                    new PozycjaRezerwacjiCreateModel
+                    {
+                        ProduktId = produktId,
+                        Ilosc = 42
+                    }
+                }
+            };
+
+            await apiCaller.Rezerwuj(rezerwacja);
+
+            var listaRezerwacji = await apiCaller.GetList();
+            var liczbaPrzedawnionych = listaRezerwacji.Count(x => x.DataWaznosci < DateTime.Now);
+
+            await apiCaller.UsunPrzedawnione();
+
+            var listaRezerwacjiPoUsunieciu = await apiCaller.GetList();
+
+            Assert.That(listaRezerwacjiPoUsunieciu, Has.Count.EqualTo(listaRezerwacji.Count - liczbaPrzedawnionych));
+        }
     }
 }
