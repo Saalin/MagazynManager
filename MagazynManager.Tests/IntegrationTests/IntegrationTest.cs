@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Respawn;
 using Serilog;
+using System;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading.Tasks;
@@ -27,11 +28,19 @@ namespace MagazynManager.Tests.IntegrationTests
             {
                 if (_connectionString == null)
                 {
-                    using (var sr = new StreamReader(GetConfigPath()))
+                    var csFromEnv = Environment.GetEnvironmentVariable("ConnectionStrings__SqlServerConnection");
+                    if (csFromEnv != null)
                     {
-                        var result = sr.ReadToEnd();
-                        dynamic stuff = JsonConvert.DeserializeObject(result);
-                        _connectionString = (string)stuff.ConnectionStrings.SqlServerConnection;
+                        _connectionString = csFromEnv;
+                    }
+                    else
+                    {
+                        using (var sr = new StreamReader(GetConfigPath()))
+                        {
+                            var result = sr.ReadToEnd();
+                            dynamic stuff = JsonConvert.DeserializeObject(result);
+                            _connectionString = (string)stuff.ConnectionStrings.SqlServerConnection;
+                        }
                     }
                 }
                 return _connectionString;
