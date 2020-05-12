@@ -24,9 +24,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --filter TestCategory=UnitTest
       env:
-        SQLPass: ${{ secrets.SQLPass }}
-        SQLServer: ${{ secrets.SQLServer }}
-        SQLUser: ${{ secrets.SQLUser }}
+        InMemoryTests: "InMemoryTests"
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
