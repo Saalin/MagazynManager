@@ -16,14 +16,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MagazynManager.Tests.UnitTests
+namespace MagazynManager.Tests.UnitTests.Ewidencja
 {
     [Category("UnitTest")]
     [TestFixture]
-    public class PrzyjecieHandlerTests
+    public class PrzyjecieHandlerTests : UnitTest
     {
         private Guid MagazynId = Guid.NewGuid();
-        private Guid PrzedsiebiorstwoId = Guid.NewGuid();
 
         private IProduktRepository _produktRepository;
         private IJednostkaMiaryRepository _jednostkaMiaryRepository;

@@ -9,14 +9,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MagazynManager.Tests.UnitTests
+namespace MagazynManager.Tests.UnitTests.Slowniki
 {
     [Category("UnitTest")]
     [TestFixture]
-    public class ProduktCommandHandlerTests
+    public class ProduktCommandHandlerTests : UnitTest
     {
         private Guid MagazynId = Guid.NewGuid();
-        private Guid PrzedsiebiorstwoId = Guid.NewGuid();
 
         private IProduktRepository _produktRepository;
         private IJednostkaMiaryRepository _jednostkaMiaryRepository;
@@ -33,8 +32,10 @@ namespace MagazynManager.Tests.UnitTests
         [Test]
         public async Task TestAddProdukt()
         {
+            var produkt = ObjectMothers.ProduktObjectMother.GetProdukt(MagazynId);
+
             var commandHandler = new ProduktCommandHandler(_produktRepository, _kategoriaRepository, _jednostkaMiaryRepository);
-            await commandHandler.Handle(new ProduktCreateCommand("Broku�", "Broku�", "szt", "Warzywa", MagazynId, PrzedsiebiorstwoId), new CancellationToken());
+            await commandHandler.Handle(new ProduktCreateCommand(produkt.ShortName, produkt.Name, produkt.JednostkaMiary, produkt.Kategoria, MagazynId, PrzedsiebiorstwoId), new CancellationToken());
 
             var queryHandler = new ProduktListQueryHandler(_produktRepository);
             var produktList = await queryHandler.Handle(new ProduktListQuery(PrzedsiebiorstwoId), new CancellationToken());
@@ -45,8 +46,10 @@ namespace MagazynManager.Tests.UnitTests
         [Test]
         public async Task DeleteProdukt()
         {
+            var produkt = ObjectMothers.ProduktObjectMother.GetProdukt(MagazynId);
+
             var commandHandler = new ProduktCommandHandler(_produktRepository, _kategoriaRepository, _jednostkaMiaryRepository);
-            var produktId = await commandHandler.Handle(new ProduktCreateCommand("Broku�", "Broku�", "szt", "Warzywa", MagazynId, PrzedsiebiorstwoId), new CancellationToken());
+            var produktId = await commandHandler.Handle(new ProduktCreateCommand(produkt.ShortName, produkt.Name, produkt.JednostkaMiary, produkt.Kategoria, MagazynId, PrzedsiebiorstwoId), new CancellationToken());
 
             var queryHandler = new ProduktListQueryHandler(_produktRepository);
             var produktList = await queryHandler.Handle(new ProduktListQuery(PrzedsiebiorstwoId), new CancellationToken());
