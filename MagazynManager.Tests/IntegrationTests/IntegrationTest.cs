@@ -28,10 +28,12 @@ namespace MagazynManager.Tests.IntegrationTests
             {
                 if (_connectionString == null)
                 {
-                    var csFromEnv = Environment.GetEnvironmentVariable("ConnectionStrings__SqlServerConnection");
-                    if (csFromEnv != null)
+                    var sqlServer = Environment.GetEnvironmentVariable("SQLServer");
+                    var user = Environment.GetEnvironmentVariable("SQLUser");
+                    var pass = Environment.GetEnvironmentVariable("SQLPass");
+                    if (sqlServer != null)
                     {
-                        _connectionString = csFromEnv;
+                        _connectionString = $"Server={sqlServer};Database=MagazynManagerTest;User Id={user};Password={pass};";
                     }
                     else
                     {
