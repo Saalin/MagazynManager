@@ -113,6 +113,7 @@ namespace MagazynManager.Tests.IntegrationTests
                 builder.ConfigureAppConfiguration((context, conf) =>
                 {
                     conf.AddJsonFile(configPath);
+                    conf.AddEnvironmentVariables();
                 });
             });
         }
