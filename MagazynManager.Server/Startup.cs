@@ -188,7 +188,14 @@ namespace MagazynManager.Server
 
         private void MigrateDatabase()
         {
-            new DatabaseMigrator(Configuration.GetConnectionString("SqlServerConnection")).MigrateUp();
+            try
+            {
+                new DatabaseMigrator(Configuration.GetConnectionString("SqlServerConnection")).MigrateUp();
+            }
+            catch
+            {
+                Log.Error("Cannot upgrade database schema");
+            }
         }
     }
 }
