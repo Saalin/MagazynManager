@@ -22,7 +22,7 @@ namespace MagazynManager.Tests.IntegrationTests
         protected WebApplicationFactory<T> _factory;
         protected string _connectionString;
 
-        protected string ConnectionString
+        private string ConnectionString
         {
             get
             {
@@ -53,13 +53,24 @@ namespace MagazynManager.Tests.IntegrationTests
         public void SetUpApplicationFactory()
         {
             _factory = CreateWebAppliationFactory(GetConfigPath());
-            new DatabaseMigrator(ConnectionString).MigrateUp();
+            if (Environment.GetEnvironmentVariable("InMemoryTests") == null)
+            {
+                new DatabaseMigrator(ConnectionString).MigrateUp();
+            }
             SetUpLogging();
             Faker.DefaultStrictMode = true;
         }
 
         [SetUp]
-        public void RefreshDatabase()
+        public void SetUpEnv()
+        {
+            if(Environment.GetEnvironmentVariable("InMemoryTests") == null)
+            {
+                RefreshDatabase();
+            }
+        }
+
+        private void RefreshDatabase()
         {
             Respawn(ConnectionString).Wait();
 
@@ -87,7 +98,7 @@ namespace MagazynManager.Tests.IntegrationTests
             }
         }
 
-        protected async Task Respawn(string connectionString)
+        private async Task Respawn(string connectionString)
         {
             var checkpoint = new Checkpoint
             {

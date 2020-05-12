@@ -23,7 +23,6 @@ namespace MagazynManager.Tests.IntegrationTests
             var response = await new KategoriaApiCaller(client).GetKategorieList();
 
             Assert.That(response, Is.Not.Null);
-            Assert.That(response, Is.Empty);
         }
 
         [Test]
@@ -36,12 +35,14 @@ namespace MagazynManager.Tests.IntegrationTests
             var tokens = await Authenticate(client).ConfigureAwait(false);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.Token);
 
+            var categoriesCountPrzedDodaniem = (await apiCaller.GetKategorieList()).Count;
+
             await apiCaller.DodajKategorie(KategoriaObjectMother.GetKategoria());
 
             var categories = await apiCaller.GetKategorieList();
 
             Assert.That(categories, Is.Not.Null);
-            Assert.That(categories, Has.Count.EqualTo(1));
+            Assert.That(categories, Has.Count.EqualTo(categoriesCountPrzedDodaniem + 1));
         }
 
         [Test]

@@ -23,6 +23,8 @@ namespace MagazynManager.Tests.IntegrationTests
             var tokens = await Authenticate(client).ConfigureAwait(false);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.Token);
 
+            var countPrzedRezerwacja = (await apiCaller.GetList()).Count;
+
             var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
@@ -45,7 +47,7 @@ namespace MagazynManager.Tests.IntegrationTests
 
             var listaRezerwacji = await apiCaller.GetList();
 
-            Assert.That(listaRezerwacji, Has.Count.EqualTo(1));
+            Assert.That(listaRezerwacji, Has.Count.EqualTo(countPrzedRezerwacja + 1));
         }
 
         [Test]
@@ -65,7 +67,7 @@ namespace MagazynManager.Tests.IntegrationTests
 
             var listaRezerwacjiPoUsunieciu = await apiCaller.GetList();
 
-            Assert.That(listaRezerwacjiPoUsunieciu, Is.Empty);
+            Assert.That(listaRezerwacjiPoUsunieciu, Has.Count.EqualTo(listaRezerwacji.Count - 1));
         }
     }
 }

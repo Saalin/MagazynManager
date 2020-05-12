@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
 using NodaTime.Testing;
+using System;
 
 namespace MagazynManager.Tests.Technical
 {
@@ -32,6 +33,14 @@ namespace MagazynManager.Tests.Technical
         {
             base.ConfigureContainer(builder);
             builder.Register(_ => new FakeClock(SystemClock.Instance.GetCurrentInstant())).As<IClock>().SingleInstance();
+
+            if (Environment.GetEnvironmentVariable("InMemoryTests") != null)
+            {
+                builder.RegisterAssemblyTypes(typeof(TestStartup).Assembly)
+                    .Where(t => t.FullName.EndsWith("Repository"))
+                    .SingleInstance()
+                    .AsImplementedInterfaces();
+            }
         }
     }
 }

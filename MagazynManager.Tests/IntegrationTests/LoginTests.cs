@@ -1,6 +1,5 @@
 using MagazynManager.Domain.Entities.Uzytkownicy;
 using MagazynManager.Infrastructure.InputModel.Authentication;
-using MagazynManager.Infrastructure.Repositories;
 using MagazynManager.Infrastructure.Specifications;
 using Newtonsoft.Json;
 using NodaTime;
@@ -20,7 +19,7 @@ namespace MagazynManager.Tests.IntegrationTests
         [Test]
         public void Test_User_Registered()
         {
-            var service = (UserRepository)_factory.Services.GetService(typeof(IUserRepository));
+            var service = (IUserRepository)_factory.Services.GetService(typeof(IUserRepository));
             var userDto = service.GetUser(new PrzedsiebiorstwoSpecification("admin@admin.com"), UserLoginModel.PrzedsiebiorstwoId);
             Assert.That(userDto, Is.Not.Null);
             Assert.That(userDto.Email, Is.EqualTo(UserLoginModel.Email));

@@ -27,10 +27,10 @@ namespace MagazynManager.Tests.UnitTests.Fakes
             return Task.FromResult(_jednostkiMiary.Where(x => x.PrzedsiebiorstwoId == przedsiebiorstwoId).ToList());
         }
 
-        public Task<Guid> Save(JednostkaMiary kategoria)
+        public Task<Guid> Save(JednostkaMiary jednostkaMiary)
         {
-            _jednostkiMiary.Add(kategoria);
-            return Task.FromResult(kategoria.Id);
+            _jednostkiMiary.Add(jednostkaMiary);
+            return Task.FromResult(jednostkaMiary.Id);
         }
     }
 }

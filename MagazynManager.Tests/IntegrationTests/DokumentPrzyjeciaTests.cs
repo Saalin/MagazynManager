@@ -26,7 +26,6 @@ namespace MagazynManager.Tests.IntegrationTests
             var response = await new KategoriaApiCaller(client).GetKategorieList();
 
             Assert.That(response, Is.Not.Null);
-            Assert.That(response, Is.Empty);
         }
 
         [Test]
