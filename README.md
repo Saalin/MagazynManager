@@ -1,6 +1,6 @@
 # MagazynManager
 
-![.NET Core](https://github.com/Saalin/MagazynManager/workflows/.NET%20Core/badge.svg)  [![codecov](https://codecov.io/gh/Saalin/MagazynManager/branch/master/graph/badge.svg)](https://codecov.io/gh/Saalin/MagazynManager)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7002a609712a4204ad8759825e7c8fe8)](https://www.codacy.com/manual/saalin/MagazynManager?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Saalin/MagazynManager&amp;utm_campaign=Badge_Grade)
+![.NET Core](https://github.com/Saalin/MagazynManager/workflows/.NET%20Core/badge.svg)  [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/7002a609712a4204ad8759825e7c8fe8)](https://www.codacy.com/manual/saalin/MagazynManager?utm_source=github.com&utm_medium=referral&utm_content=Saalin/MagazynManager&utm_campaign=Badge_Coverage)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7002a609712a4204ad8759825e7c8fe8)](https://www.codacy.com/manual/saalin/MagazynManager?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Saalin/MagazynManager&amp;utm_campaign=Badge_Grade)
 
 Wersja demonstracyjna aplikacji dostępna jest pod adresem http://172.104.158.90/index.html, tam też znajdują sie szczegóły dotyczące jej działania
 
