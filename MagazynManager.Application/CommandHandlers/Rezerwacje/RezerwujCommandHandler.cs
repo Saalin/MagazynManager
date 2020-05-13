@@ -19,7 +19,7 @@ namespace MagazynManager.Application.CommandHandlers.Rezerwacje
 
         public async Task<Guid> Handle(RezerwujCommand request, CancellationToken cancellationToken)
         {
-            var rezerwacja = new Rezerwacja()
+            var rezerwacja = new Rezerwacja
             {
                 PrzedsiebiorstwoId = request.PrzedsiebiorstwoId,
                 UzytkownikRezerwujacyId = request.UserId,

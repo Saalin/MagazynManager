@@ -7,7 +7,7 @@ namespace MagazynManager.Tests.ObjectMothers
 {
     public static class DokumentObjectMother
     {
-        public static PrzyjecieCreateModel GetDokumentPrzyjeciaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc, Guid? kontrahentId = null)
+        public static PrzyjecieCreateModel GetDokumentPrzyjeciaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc, Guid? kontrahentId )
         {
             return new PrzyjecieCreateModel
             {
@@ -27,7 +27,12 @@ namespace MagazynManager.Tests.ObjectMothers
             };
         }
 
-        public static WydanieCreateModel GetDokumentWydaniaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc, Guid? kontrahentId = null)
+        public static PrzyjecieCreateModel GetDokumentPrzyjeciaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc)
+        {
+            return GetDokumentPrzyjeciaZJednaPozycja(magazynId, produktId, ilosc, null);
+        }
+
+        public static WydanieCreateModel GetDokumentWydaniaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc, Guid? kontrahentId)
         {
             return new WydanieCreateModel
             {
@@ -43,6 +48,11 @@ namespace MagazynManager.Tests.ObjectMothers
                     }
                 }
             };
+        }
+
+        public static WydanieCreateModel GetDokumentWydaniaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc)
+        {
+            return GetDokumentWydaniaZJednaPozycja(magazynId, produktId, ilosc, null);
         }
 
         public static PrzesuniecieCreateModel GetPrzesuniecieZJednaPozycja(Guid magazynWydaniaId, Guid magazynPrzyjeciaId, Guid produktId, decimal ilosc)
