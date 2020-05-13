@@ -7,13 +7,12 @@ using MagazynManager.Application.Queries.Ewidencja;
 using MagazynManager.Application.QueryHandlers.Ewidencja;
 using MagazynManager.Domain.DomainServices;
 using MagazynManager.Domain.Entities.Dokumenty;
+using MagazynManager.Domain.Entities.Kontrahent;
 using MagazynManager.Domain.Entities.Produkty;
-using MagazynManager.Domain.Entities.Slowniki;
-using MagazynManager.Infrastructure.InputModel.Ewidencja;
+using MagazynManager.Tests.ObjectMothers;
 using MagazynManager.Tests.UnitTests.Fakes;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +30,8 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
         private IKategoriaRepository _kategoriaRepository;
         private IDokumentRepository _dokumentRepository;
 
+        private Guid KontrahentId { get; set; }
+
         [SetUp]
         public void Setup()
         {
@@ -38,31 +39,37 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
             _jednostkaMiaryRepository = new InMemoryJednostkaMiaryRepository();
             _kategoriaRepository = new InMemoryKategoriaRepository();
             _dokumentRepository = new InMemoryDokumentRepository();
+
+            var kontrahentRepository = new InMemoryKontrahentRepository();
+            KontrahentId = kontrahentRepository.Save(new Kontrahent
+            {
+                Id = Guid.NewGuid(),
+                DaneAdresowe = new DaneAdresowe
+                {
+                    KodPocztowy = "12-345",
+                    Miejscowosc = "Warszawa",
+                    Ulica = "Puławska 10"
+                },
+                Nazwa = "Abc",
+                Nip = "123-134-23-23",
+                PrzedsiebiorstwoId = PrzedsiebiorstwoId,
+                Skrot = "Abc",
+                TypKontrahenta = TypKontrahenta.Firma
+            }).Result;
         }
 
         [Test]
-        public async Task ZmienionyStanAktualnyPoPrzyjeciu()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ZmienionyStanAktualnyPoPrzyjeciu(bool kontrahent)
         {
             var produktAddCommandHandler = new ProduktCommandHandler(_produktRepository, _kategoriaRepository, _jednostkaMiaryRepository);
-            var produktId = await produktAddCommandHandler.Handle(new ProduktCreateCommand("Broku�", "Broku�", "szt", "Warzywa", MagazynId, PrzedsiebiorstwoId), new CancellationToken());
+            var produkt = ProduktObjectMother.GetProdukt(MagazynId);
+            var produktId = await produktAddCommandHandler.Handle(new ProduktCreateCommand(produkt.Name, produkt.ShortName, produkt.JednostkaMiary, produkt.Kategoria, MagazynId, PrzedsiebiorstwoId), new CancellationToken());
 
             var commandHandler = new PrzyjmijCommandHandler(_dokumentRepository);
-            await commandHandler.Handle(new PrzyjmijCommand(PrzedsiebiorstwoId, new PrzyjecieCreateModel
-            {
-                MagazynId = MagazynId,
-                KontrahentId = null,
-                Data = DateTime.Now,
-                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
-                {
-                    new PrzyjeciePozycjaDokumentuCreateModel
-                    {
-                        Ilosc = 42,
-                        CenaNetto = 1,
-                        ProduktId = produktId,
-                        StawkaVat = StawkaVat.PiecProcent
-                    }
-                }
-            }), new CancellationToken());
+            var dokumentPrzyjecia = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(MagazynId, produktId, 42, kontrahent ? KontrahentId : (Guid?)null);
+            await commandHandler.Handle(new PrzyjmijCommand(PrzedsiebiorstwoId, dokumentPrzyjecia), new CancellationToken());
 
             var stanQueryHandler = new StanAktualnyMagazynuQueryHandler(new StanAktualnyService(_dokumentRepository), _produktRepository);
             var stanAktualnyList = await stanQueryHandler.Handle(new StanAktualnyMagazynuQuery(MagazynId, PrzedsiebiorstwoId), new CancellationToken());
@@ -75,9 +82,11 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
         }
 
         [Test]
-        public async Task WydanieTowaruPoPrzyjeciu()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task WydanieTowaruPoPrzyjeciu(bool kontrahent)
         {
-            await ZmienionyStanAktualnyPoPrzyjeciu();
+            await ZmienionyStanAktualnyPoPrzyjeciu(kontrahent);
 
             var stanQueryHandler = new StanAktualnyMagazynuQueryHandler(new StanAktualnyService(_dokumentRepository), _produktRepository);
             var stanAktualnyList = await stanQueryHandler.Handle(new StanAktualnyMagazynuQuery(MagazynId, PrzedsiebiorstwoId), new CancellationToken());
@@ -87,20 +96,8 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
             var stanProduktuPrzedWydaniem = stanAktualnyList.First();
 
             var commandHandler = new WydajCommandHandler(_dokumentRepository, new StanAktualnyService(_dokumentRepository));
-            await commandHandler.Handle(new WydajCommand(PrzedsiebiorstwoId, new WydanieCreateModel
-            {
-                MagazynId = MagazynId,
-                KontrahentId = null,
-                Data = DateTime.Now,
-                Pozycje = new List<PozycjaWydaniaModel>
-                {
-                    new PozycjaWydaniaModel
-                    {
-                        Ilosc = 10,
-                        ProduktId = stanProduktuPrzedWydaniem.ProduktId
-                    }
-                }
-            }), new CancellationToken());
+            var dokumentWydania = DokumentObjectMother.GetDokumentWydaniaZJednaPozycja(MagazynId, stanProduktuPrzedWydaniem.ProduktId, 10, kontrahent ? KontrahentId : (Guid?)null);
+            await commandHandler.Handle(new WydajCommand(PrzedsiebiorstwoId, dokumentWydania), new CancellationToken());
 
             var stanAktualnyAfterWydanie = await stanQueryHandler.Handle(new StanAktualnyMagazynuQuery(MagazynId, PrzedsiebiorstwoId), new CancellationToken());
 
@@ -110,9 +107,11 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
         }
 
         [Test]
-        public async Task ProbaWydaniaPonadStan()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ProbaWydaniaPonadStan(bool kontrahent)
         {
-            await ZmienionyStanAktualnyPoPrzyjeciu();
+            await ZmienionyStanAktualnyPoPrzyjeciu(kontrahent);
 
             var stanQueryHandler = new StanAktualnyMagazynuQueryHandler(new StanAktualnyService(_dokumentRepository), _produktRepository);
             var stanAktualnyList = await stanQueryHandler.Handle(new StanAktualnyMagazynuQuery(MagazynId, PrzedsiebiorstwoId), new CancellationToken());
@@ -123,22 +122,10 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
 
             var commandHandler = new WydajCommandHandler(_dokumentRepository, new StanAktualnyService(_dokumentRepository));
 
+            var dokumentWydajacyZaDuzo = DokumentObjectMother.GetDokumentWydaniaZJednaPozycja(MagazynId, stanProduktuPrzedWydaniem.ProduktId, stanProduktuPrzedWydaniem.Ilosc + 10, kontrahent ? KontrahentId : (Guid?)null);
             Assert.ThrowsAsync<BussinessException>(async () =>
             {
-                await commandHandler.Handle(new WydajCommand(PrzedsiebiorstwoId, new WydanieCreateModel
-                {
-                    MagazynId = MagazynId,
-                    KontrahentId = null,
-                    Data = DateTime.Now,
-                    Pozycje = new List<PozycjaWydaniaModel>
-                {
-                    new PozycjaWydaniaModel
-                    {
-                        Ilosc = stanProduktuPrzedWydaniem.Ilosc + 10,
-                        ProduktId = stanProduktuPrzedWydaniem.ProduktId
-                    }
-                }
-                }), new CancellationToken());
+                await commandHandler.Handle(new WydajCommand(PrzedsiebiorstwoId, dokumentWydajacyZaDuzo), new CancellationToken());
             });
         }
     }

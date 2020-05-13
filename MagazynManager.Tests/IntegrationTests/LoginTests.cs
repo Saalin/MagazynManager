@@ -1,6 +1,7 @@
 using MagazynManager.Domain.Entities.Uzytkownicy;
 using MagazynManager.Infrastructure.InputModel.Authentication;
 using MagazynManager.Infrastructure.Specifications;
+using MagazynManager.Tests.ObjectMothers;
 using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Testing;
@@ -48,6 +49,18 @@ namespace MagazynManager.Tests.IntegrationTests
             var response = await client.PostAsync("user/refresh", content).ConfigureAwait(false);
 
             //Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        [Test]
+        public async Task TestBadLogin()
+        {
+            var client = _factory.CreateClient();
+            var badLoginModel = LoginObjectMother.GetBadLoginModel();
+
+            var content = new StringContent(JsonConvert.SerializeObject(badLoginModel, GetNodaTimeSerializerSettings()), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("user/login", content).ConfigureAwait(false);
+
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
     }

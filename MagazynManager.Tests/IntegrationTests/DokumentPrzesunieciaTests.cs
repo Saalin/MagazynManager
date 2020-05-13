@@ -1,11 +1,7 @@
-﻿using MagazynManager.Domain.Entities.Slowniki;
-using MagazynManager.Infrastructure.InputModel.Ewidencja;
-using MagazynManager.Tests.IntegrationTests.ApiCallers;
+﻿using MagazynManager.Tests.IntegrationTests.ApiCallers;
 using MagazynManager.Tests.ObjectMothers;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -34,54 +30,14 @@ namespace MagazynManager.Tests.IntegrationTests
 
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynWydaniaId));
 
-            await new PrzyjecieApiCaller(client).Przyjmij(new PrzyjecieCreateModel
-            {
-                MagazynId = magazynWydaniaId,
-                Data = DateTime.Now,
-                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
-                {
-                    new PrzyjeciePozycjaDokumentuCreateModel
-                    {
-                        ProduktId = produktId,
-                        CenaNetto = 1M,
-                        Ilosc = 10,
-                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
-                    }
-                }
-            });
+            var dokumentPrzyjecia = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(magazynWydaniaId, produktId, 10);
+            await new PrzyjecieApiCaller(client).Przyjmij(dokumentPrzyjecia);
 
-            var przesuniecieModel = new PrzesuniecieCreateModel
-            {
-                MagazynWydajacyId = magazynWydaniaId,
-                MagazynPrzyjmujacyId = magazynPrzyjeciaId,
-                Data = DateTime.Now,
-                Pozycje = new List<PozycjaWydaniaModel>
-                {
-                    new PozycjaWydaniaModel
-                    {
-                        ProduktId = produktId,
-                        Ilosc = 10
-                    }
-                }
-            };
-
+            var przesuniecieModel = DokumentObjectMother.GetPrzesuniecieZJednaPozycja(magazynWydaniaId, magazynPrzyjeciaId, produktId, 10);
             await new PrzesuniecieApiCaller(client).Przesun(przesuniecieModel);
 
             //Act
-            var przesuniecieModel2 = new PrzesuniecieCreateModel
-            {
-                MagazynWydajacyId = magazynWydaniaId,
-                MagazynPrzyjmujacyId = magazynPrzyjeciaId,
-                Data = DateTime.Now,
-                Pozycje = new List<PozycjaWydaniaModel>
-                {
-                    new PozycjaWydaniaModel
-                    {
-                        ProduktId = produktId,
-                        Ilosc = 1
-                    }
-                }
-            };
+            var przesuniecieModel2 = DokumentObjectMother.GetPrzesuniecieZJednaPozycja(magazynWydaniaId, magazynPrzyjeciaId, produktId, 1);
 
             var serializerSettings = GetNodaTimeSerializerSettings();
             var content = new StringContent(JsonConvert.SerializeObject(przesuniecieModel2, serializerSettings), Encoding.UTF8, "application/json");
@@ -106,36 +62,10 @@ namespace MagazynManager.Tests.IntegrationTests
             var magazynPrzyjeciaId = await magazynApiCaller.DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynWydaniaId));
 
-            await new PrzyjecieApiCaller(client).Przyjmij(new PrzyjecieCreateModel
-            {
-                MagazynId = magazynWydaniaId,
-                Data = DateTime.Now,
-                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
-                {
-                    new PrzyjeciePozycjaDokumentuCreateModel
-                    {
-                        ProduktId = produktId,
-                        CenaNetto = 1M,
-                        Ilosc = 10,
-                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
-                    }
-                }
-            });
+            var dokumentPrzyjecia = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(magazynWydaniaId, produktId, 10);
+            await new PrzyjecieApiCaller(client).Przyjmij(dokumentPrzyjecia);
 
-            var przesuniecieModel = new PrzesuniecieCreateModel
-            {
-                MagazynWydajacyId = magazynWydaniaId,
-                MagazynPrzyjmujacyId = magazynPrzyjeciaId,
-                Data = DateTime.Now,
-                Pozycje = new List<PozycjaWydaniaModel>
-                {
-                    new PozycjaWydaniaModel
-                    {
-                        ProduktId = produktId,
-                        Ilosc = 7
-                    }
-                }
-            };
+            var przesuniecieModel = DokumentObjectMother.GetPrzesuniecieZJednaPozycja(magazynWydaniaId, magazynPrzyjeciaId, produktId, 7);
 
             var stanAktualnyApiCaller = new StanAktualnyApiCaller(client);
 

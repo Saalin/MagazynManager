@@ -1,9 +1,7 @@
-﻿using MagazynManager.Infrastructure.InputModel.Rezerwacje;
-using MagazynManager.Tests.IntegrationTests.ApiCallers;
+﻿using MagazynManager.Tests.IntegrationTests.ApiCallers;
 using MagazynManager.Tests.ObjectMothers;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -28,21 +26,7 @@ namespace MagazynManager.Tests.IntegrationTests
             var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
-            var rezerwacja = new RezerwacjaCreateModel
-            {
-                DataRezerwacji = DateTime.Now,
-                DataWaznosci = DateTime.Now.AddDays(7),
-                Opis = string.Empty,
-                Pozycje = new List<PozycjaRezerwacjiCreateModel>
-                {
-                    new PozycjaRezerwacjiCreateModel
-                    {
-                        ProduktId = produktId,
-                        Ilosc = 42
-                    }
-                }
-            };
-
+            var rezerwacja = RezerwacjaObjectMother.GetPoprawanaRezerwacja(produktId);
             await apiCaller.Rezerwuj(rezerwacja);
 
             var listaRezerwacji = await apiCaller.GetList();
@@ -60,14 +44,19 @@ namespace MagazynManager.Tests.IntegrationTests
             var tokens = await Authenticate(client).ConfigureAwait(false);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.Token);
 
-            await Rezerwuj_Sprawdz_Liste();
-            var listaRezerwacji = await apiCaller.GetList();
+            var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
+            var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
-            await apiCaller.Anuluj(listaRezerwacji.First().Id);
+            var rezerwacja = RezerwacjaObjectMother.GetPoprawanaRezerwacja(produktId);
+            await apiCaller.Rezerwuj(rezerwacja);
+
+            var listaRezerwacjiPrzedUsunieciem = await apiCaller.GetList();
+
+            await apiCaller.Anuluj(listaRezerwacjiPrzedUsunieciem.First().Id);
 
             var listaRezerwacjiPoUsunieciu = await apiCaller.GetList();
 
-            Assert.That(listaRezerwacjiPoUsunieciu, Has.Count.EqualTo(listaRezerwacji.Count - 1));
+            Assert.That(listaRezerwacjiPoUsunieciu, Has.Count.EqualTo(listaRezerwacjiPrzedUsunieciem.Count - 1));
         }
 
         [Test]
@@ -83,20 +72,7 @@ namespace MagazynManager.Tests.IntegrationTests
             var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
-            var rezerwacja = new RezerwacjaCreateModel
-            {
-                DataRezerwacji = DateTime.Now.AddDays(-14),
-                DataWaznosci = DateTime.Now.AddDays(-7),
-                Opis = string.Empty,
-                Pozycje = new List<PozycjaRezerwacjiCreateModel>
-                {
-                    new PozycjaRezerwacjiCreateModel
-                    {
-                        ProduktId = produktId,
-                        Ilosc = 42
-                    }
-                }
-            };
+            var rezerwacja = RezerwacjaObjectMother.GetPrzedawnionaRezerwacja(produktId);
 
             await apiCaller.Rezerwuj(rezerwacja);
 

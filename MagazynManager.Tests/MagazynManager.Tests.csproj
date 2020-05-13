@@ -45,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UnitTests\Authentication\" />
     <Folder Include="UnitTests\Rezerwacje\" />
   </ItemGroup>
 

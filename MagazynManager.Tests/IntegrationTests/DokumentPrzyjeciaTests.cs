@@ -1,10 +1,6 @@
-﻿using MagazynManager.Domain.Entities.Slowniki;
-using MagazynManager.Infrastructure.InputModel.Ewidencja;
-using MagazynManager.Tests.IntegrationTests.ApiCallers;
+﻿using MagazynManager.Tests.IntegrationTests.ApiCallers;
 using MagazynManager.Tests.ObjectMothers;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -41,22 +37,7 @@ namespace MagazynManager.Tests.IntegrationTests
             var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
-            var przyjecieModel = new PrzyjecieCreateModel
-            {
-                MagazynId = magazynId,
-                Data = DateTime.Now,
-                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
-                {
-                    new PrzyjeciePozycjaDokumentuCreateModel
-                    {
-                        ProduktId = produktId,
-                        CenaNetto = 1M,
-                        Ilosc = 10,
-                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
-                    }
-                }
-            };
-
+            var przyjecieModel = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(magazynId, produktId, 10);
             await apiCaller.Przyjmij(przyjecieModel);
 
             var dokumenty = await apiCaller.GetDokumentyPrzyjecia();
@@ -78,22 +59,7 @@ namespace MagazynManager.Tests.IntegrationTests
             var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
-            var przyjecieModel = new PrzyjecieCreateModel
-            {
-                MagazynId = magazynId,
-                Data = DateTime.Now,
-                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
-                {
-                    new PrzyjeciePozycjaDokumentuCreateModel
-                    {
-                        ProduktId = produktId,
-                        CenaNetto = 1M,
-                        Ilosc = 10,
-                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
-                    }
-                }
-            };
-
+            var przyjecieModel = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(magazynId, produktId, 10);
             await apiCaller.Przyjmij(przyjecieModel);
 
             var stany = await new StanAktualnyApiCaller(client).GetStanAktualny(magazynId);

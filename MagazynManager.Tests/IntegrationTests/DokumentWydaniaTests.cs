@@ -1,10 +1,6 @@
-﻿using MagazynManager.Domain.Entities.Slowniki;
-using MagazynManager.Infrastructure.InputModel.Ewidencja;
-using MagazynManager.Tests.IntegrationTests.ApiCallers;
+﻿using MagazynManager.Tests.IntegrationTests.ApiCallers;
 using MagazynManager.Tests.ObjectMothers;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -26,36 +22,10 @@ namespace MagazynManager.Tests.IntegrationTests
             var magazynId = await new MagazynApiCaller(client).DodajMagazyn(MagazynObjectMother.GetMagazyn());
             var produktId = await new ProduktApiCaller(client).DodajProdukt(ProduktObjectMother.GetProdukt(magazynId));
 
-            await new PrzyjecieApiCaller(client).Przyjmij(new PrzyjecieCreateModel
-            {
-                MagazynId = magazynId,
-                Data = DateTime.Now,
-                Pozycje = new List<PrzyjeciePozycjaDokumentuCreateModel>
-                {
-                    new PrzyjeciePozycjaDokumentuCreateModel
-                    {
-                        ProduktId = produktId,
-                        CenaNetto = 1M,
-                        Ilosc = 10,
-                        StawkaVat = StawkaVat.DwadziesciaTrzyProcent
-                    }
-                }
-            });
+            var dokumentPrzyjecia = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(magazynId, produktId, 10);
+            await new PrzyjecieApiCaller(client).Przyjmij(dokumentPrzyjecia);
 
-            var wydanieModel = new WydanieCreateModel
-            {
-                MagazynId = magazynId,
-                Data = DateTime.Now,
-                Pozycje = new List<PozycjaWydaniaModel>
-                {
-                    new PozycjaWydaniaModel
-                    {
-                        ProduktId = produktId,
-                        Ilosc = 7
-                    }
-                }
-            };
-
+            var wydanieModel = DokumentObjectMother.GetDokumentWydaniaZJednaPozycja(magazynId, produktId, 7);
             await new WydanieApiCaller(client).Wydaj(wydanieModel);
 
             var stanyWydane = await new StanAktualnyApiCaller(client).GetStanAktualny(magazynId);

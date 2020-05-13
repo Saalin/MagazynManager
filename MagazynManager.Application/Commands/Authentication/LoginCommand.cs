@@ -5,7 +5,7 @@ using System;
 
 namespace MagazynManager.Application.Commands.Authentication
 {
-    public class LoginCommand : IRequest<AuthResult>
+    public sealed class LoginCommand : IRequest<AuthResult>, IEquatable<LoginCommand>
     {
         public string Email { get; set; }
         public string Password { get; set; }
@@ -16,6 +16,11 @@ namespace MagazynManager.Application.Commands.Authentication
             Email = inputModel.Email;
             Password = inputModel.Password;
             PrzedsiebiorstwoId = inputModel.PrzedsiebiorstwoId;
+        }
+
+        public bool Equals(LoginCommand other)
+        {
+            return other.Email == Email && other.Password == Password && other.PrzedsiebiorstwoId == PrzedsiebiorstwoId;
         }
     }
 }
