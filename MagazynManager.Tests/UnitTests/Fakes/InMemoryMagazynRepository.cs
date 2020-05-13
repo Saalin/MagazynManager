@@ -1,4 +1,6 @@
-﻿using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
+﻿using MagazynManager.Domain.Entities;
+using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
+using MagazynManager.Domain.Specification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MagazynManager.Tests.UnitTests
 {
-    public class InMemoryMagazynRepository : IMagazynRepository
+    public class InMemoryMagazynRepository : ISlownikRepository<Magazyn>
     {
         private readonly List<Magazyn> _magazyny;
 
@@ -15,22 +17,22 @@ namespace MagazynManager.Tests.UnitTests
             _magazyny = new List<Magazyn>();
         }
 
-        public Task Delete(Guid id)
+        public Task Delete(Magazyn entity)
         {
             foreach (var m in _magazyny)
             {
-                if (m.Id == id)
+                if (m.Id == entity.Id)
                 {
                     _magazyny.Remove(m);
+                    return Task.CompletedTask;
                 }
             }
-
             return Task.CompletedTask;
         }
 
-        public Task<List<Magazyn>> GetList(Guid przedsiebiorstwoId)
+        public Task<List<Magazyn>> GetList(Specification<Magazyn> specification)
         {
-            return Task.FromResult(_magazyny.Where(x => x.PrzedsiebiorstwoId == przedsiebiorstwoId).ToList());
+            return Task.FromResult(_magazyny.Where(specification.ToExpression().Compile()).ToList());
         }
 
         public Task<Guid> Save(Magazyn magazyn)

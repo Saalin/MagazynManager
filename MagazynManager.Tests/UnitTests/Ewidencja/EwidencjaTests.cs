@@ -26,8 +26,8 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
     {
         private Guid MagazynId = Guid.NewGuid();
 
-        private IProduktRepository _produktRepository;
-        private IJednostkaMiaryRepository _jednostkaMiaryRepository;
+        private ISlownikRepository<Produkt> _produktRepository;
+        private ISlownikRepository<JednostkaMiary> _jednostkaMiaryRepository;
         private ISlownikRepository<Kategoria> _kategoriaRepository;
         private IDokumentRepository _dokumentRepository;
 

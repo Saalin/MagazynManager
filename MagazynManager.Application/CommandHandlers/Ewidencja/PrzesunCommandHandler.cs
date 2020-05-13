@@ -1,8 +1,10 @@
 ﻿using MagazynManager.Application.Commands.Ewidencja;
 using MagazynManager.Domain.DomainServices;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Dokumenty;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Domain.Entities.Slowniki;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -17,9 +19,9 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
     {
         private readonly IDokumentRepository _dokumentRepository;
         private readonly StanAktualnyService _stanyAktualneService;
-        private readonly IProduktRepository _produktRepository;
+        private readonly ISlownikRepository<Produkt> _produktRepository;
 
-        public PrzesunCommandHandler(IDokumentRepository dokumentRepository, StanAktualnyService stanyAktualneService, IProduktRepository produktRepository)
+        public PrzesunCommandHandler(IDokumentRepository dokumentRepository, StanAktualnyService stanyAktualneService, ISlownikRepository<Produkt> produktRepository)
         {
             _dokumentRepository = dokumentRepository;
             _stanyAktualneService = stanyAktualneService;
@@ -32,7 +34,7 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
             var orderedStanyAktualne = stanyAktualne.Where(x => x.Ilosc > 0)
                 .OrderBy(x => x.CenaNetto).ThenBy(x => x.CenaBrutto).ToList();
 
-            var produkty = await _produktRepository.GetList(request.PrzedsiebiorstwoId);
+            var produkty = await _produktRepository.GetList(new PrzedsiebiorstwoSpecification<Produkt>(request.PrzedsiebiorstwoId));
 
             var pozycjeDokumentuWydania = new List<PozycjaDokumentu>();
             var pozycjeDokumentuPrzyjecia = new List<PozycjaDokumentu>();

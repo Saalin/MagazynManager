@@ -14,11 +14,11 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
     public class ProduktCommandHandler : IRequestHandler<ProduktCreateCommand, Guid>,
         IRequestHandler<ProduktDeleteCommand, Unit>
     {
-        private readonly IProduktRepository _produktRepository;
+        private readonly ISlownikRepository<Produkt> _produktRepository;
         private readonly ISlownikRepository<Kategoria> _kategoriaRepository;
-        private readonly IJednostkaMiaryRepository _jednostkaMiaryRepository;
+        private readonly ISlownikRepository<JednostkaMiary> _jednostkaMiaryRepository;
 
-        public ProduktCommandHandler(IProduktRepository produktRepository, ISlownikRepository<Kategoria> kategoriaRepository, IJednostkaMiaryRepository jednostkaMiaryRepository)
+        public ProduktCommandHandler(ISlownikRepository<Produkt> produktRepository, ISlownikRepository<Kategoria> kategoriaRepository, ISlownikRepository<JednostkaMiary> jednostkaMiaryRepository)
         {
             _produktRepository = produktRepository;
             _kategoriaRepository = kategoriaRepository;
@@ -36,7 +36,7 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
                 await _kategoriaRepository.Save(kategoria);
             }
 
-            var jednostkiMiary = await _jednostkaMiaryRepository.GetList(request.PrzedsiebiorstwoId);
+            var jednostkiMiary = await _jednostkaMiaryRepository.GetList(new PrzedsiebiorstwoSpecification<JednostkaMiary>(request.PrzedsiebiorstwoId));
             var jednostkaMiary = jednostkiMiary.FirstOrDefault(x => x.Nazwa == request.JednostkaMiary);
 
             if (jednostkaMiary == null)
@@ -60,7 +60,8 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
 
         public async Task<Unit> Handle(ProduktDeleteCommand request, CancellationToken cancellationToken)
         {
-            await _produktRepository.Delete(request.ProduktId);
+            var produkt = await _produktRepository.GetList(new IdSpecification<Produkt, Guid>(request.ProduktId));
+            await _produktRepository.Delete(produkt.Single());
             return Unit.Value;
         }
     }

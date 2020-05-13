@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Dapper;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -25,6 +27,11 @@ namespace MagazynManager.Domain.Specification
 
             return Expression.Lambda<Func<T, bool>>(
                 andExpression, leftExpression.Parameters.Single());
+        }
+
+        public override IEnumerable<Action<DynamicParameters>> GetDynamicParameters()
+        {
+            return _right.GetDynamicParameters().Concat(_left.GetDynamicParameters());
         }
 
         public override string ToSql()

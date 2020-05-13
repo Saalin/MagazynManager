@@ -22,6 +22,7 @@ namespace MagazynManager.Tests.UnitTests
                 if (r.Id == rezerwacja.Id)
                 {
                     _rezerwacje.Remove(r);
+                    return Task.CompletedTask;
                 }
             }
 

@@ -1,6 +1,8 @@
 ﻿using MagazynManager.Application.Queries.Slowniki;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Infrastructure.Dto.Slowniki;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +14,16 @@ namespace MagazynManager.Application.QueryHandlers.Slowniki
     [QueryHandler]
     public class JednostkaMiaryListQueryHandler : IRequestHandler<JednostkaMiaryListQuery, List<JednostkaMiaryDto>>
     {
-        private readonly IJednostkaMiaryRepository _repository;
+        private readonly ISlownikRepository<JednostkaMiary> _repository;
 
-        public JednostkaMiaryListQueryHandler(IJednostkaMiaryRepository repository)
+        public JednostkaMiaryListQueryHandler(ISlownikRepository<JednostkaMiary> repository)
         {
             _repository = repository;
         }
 
         public async Task<List<JednostkaMiaryDto>> Handle(JednostkaMiaryListQuery request, CancellationToken cancellationToken)
         {
-            var jednostkiMiary = await _repository.GetList(request.PrzedsiebiorstwoId);
+            var jednostkiMiary = await _repository.GetList(new PrzedsiebiorstwoSpecification<JednostkaMiary>(request.PrzedsiebiorstwoId));
 
             return jednostkiMiary.Select(x => new JednostkaMiaryDto
             {

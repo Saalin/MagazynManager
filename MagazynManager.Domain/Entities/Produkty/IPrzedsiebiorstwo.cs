@@ -4,6 +4,6 @@ namespace MagazynManager.Domain.Entities.Produkty
 {
     public interface IPrzedsiebiorstwo
     {
-        Guid PrzedsiebiorstwoId { get; set; }
+        Guid PrzedsiebiorstwoId { get; }
     }
 }

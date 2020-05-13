@@ -1,7 +1,10 @@
 ﻿using MagazynManager.Application.Commands.Slowniki;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,16 +14,17 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
     public class MagazynCommandHandler : IRequestHandler<MagazynCreateCommand, Guid>,
         IRequestHandler<MagazynDeleteCommand, Unit>
     {
-        private readonly IMagazynRepository _repository;
+        private readonly ISlownikRepository<Magazyn> _repository;
 
-        public MagazynCommandHandler(IMagazynRepository repository)
+        public MagazynCommandHandler(ISlownikRepository<Magazyn> repository)
         {
             _repository = repository;
         }
 
         public async Task<Unit> Handle(MagazynDeleteCommand request, CancellationToken cancellationToken)
         {
-            await _repository.Delete(request.MagazynId);
+            var magazyn = await _repository.GetList(new IdSpecification<Magazyn, Guid>(request.MagazynId));
+            await _repository.Delete(magazyn.Single());
             return Unit.Value;
         }
 

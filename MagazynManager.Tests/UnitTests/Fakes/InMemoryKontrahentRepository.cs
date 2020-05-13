@@ -22,6 +22,7 @@ namespace MagazynManager.Tests.UnitTests
                 if (r.Id == id)
                 {
                     _kontrahenci.Remove(r);
+                    return Task.CompletedTask;
                 }
             }
 

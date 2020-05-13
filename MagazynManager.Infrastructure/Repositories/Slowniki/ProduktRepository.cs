@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Domain.Specification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 namespace MagazynManager.Infrastructure.Repositories.Slowniki
 {
     [Repository]
-    public class ProduktRepository : IProduktRepository
+    public class ProduktRepository : ISlownikRepository<Produkt>
     {
         private readonly IDbConnectionSource _dbConnectionSource;
 
@@ -17,7 +19,7 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
             _dbConnectionSource = dbConnectionSource;
         }
 
-        public async Task<List<Produkt>> GetList(Guid przedsiebiorstwoId)
+        public async Task<List<Produkt>> GetList(Specification<Produkt> specification)
         {
             var sql = @"SELECT P.Id as ProduktId,
                             p.ShortName as ProduktSkrot,
@@ -31,12 +33,11 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
                             FROM Produkt P
                             INNER JOIN Magazyn M on P.MagazynId = M.Id
                             INNER JOIN JednostkaMiary JM on P.UnitId = JM.Id
-                            LEFT JOIN Kategoria K on P.KategoriaId = K.Id
-                            WHERE K.PrzedsiebiorstwoId = @PrzedsiebiorstwoId";
+                            LEFT JOIN Kategoria K on P.KategoriaId = K.Id";
 
             using (var conn = _dbConnectionSource.GetConnection())
             {
-                var result = await conn.QueryAsync(sql, new { PrzedsiebiorstwoId = przedsiebiorstwoId });
+                var result = await conn.QueryAsync(sql);
                 return result.Select(x => new Produkt
                 {
                     Id = x.ProduktId,
@@ -45,17 +46,17 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
                     Kategoria = new Kategoria(x.KategoriaId, x.KategoriaNazwa, x.PrzedsiebiorstwoId),
                     JednostkaMiary = new JednostkaMiary(x.JednostkaMiaryId, x.JednostkaMiaryNazwa, x.PrzedsiebiorstwoId),
                     MagazynId = x.MagazynId
-                }).ToList();
+                }).Where(specification.ToExpression().Compile()).ToList();
             }
         }
 
-        public async Task Delete(Guid id)
+        public async Task Delete(Produkt entity)
         {
             var sql = "DELETE FROM [dbo].[Produkt] WHERE Id = @Id";
 
             using (var conn = _dbConnectionSource.GetConnection())
             {
-                await conn.ExecuteAsync(sql, new { Id = id });
+                await conn.ExecuteAsync(sql, new { Id = entity.Id });
             }
         }
 

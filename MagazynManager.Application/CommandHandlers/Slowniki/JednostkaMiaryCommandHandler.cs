@@ -1,7 +1,10 @@
 ﻿using MagazynManager.Application.Commands.Slowniki;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +14,9 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
     public class JednostkaMiaryCommandHandler : IRequestHandler<JednostkaMiaryCreateCommand, Guid>,
         IRequestHandler<JednostkaMiaryDeleteCommand, Unit>
     {
-        private readonly IJednostkaMiaryRepository _repository;
+        private readonly ISlownikRepository<JednostkaMiary> _repository;
 
-        public JednostkaMiaryCommandHandler(IJednostkaMiaryRepository repository)
+        public JednostkaMiaryCommandHandler(ISlownikRepository<JednostkaMiary> repository)
         {
             _repository = repository;
         }
@@ -25,7 +28,8 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
 
         public async Task<Unit> Handle(JednostkaMiaryDeleteCommand request, CancellationToken cancellationToken)
         {
-            await _repository.Delete(request.JednostkaMiaryId);
+            var jednostkiMiary = await _repository.GetList(new IdSpecification<JednostkaMiary, Guid>(request.JednostkaMiaryId));
+            await _repository.Delete(jednostkiMiary.Single());
             return Unit.Value;
         }
     }

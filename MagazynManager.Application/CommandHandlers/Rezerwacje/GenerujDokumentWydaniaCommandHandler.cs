@@ -1,8 +1,10 @@
 ﻿using MagazynManager.Application.Commands.Ewidencja;
 using MagazynManager.Application.Commands.Rezerwacje;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Domain.Entities.Rezerwacje;
 using MagazynManager.Infrastructure.InputModel.Ewidencja;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System;
 using System.Linq;
@@ -16,9 +18,9 @@ namespace MagazynManager.Application.CommandHandlers.Rezerwacje
     {
         private readonly IRezerwacjaRepository _rezerwacjaRepository;
         private readonly IMediator _mediator;
-        private readonly IProduktRepository _produktRepository;
+        private readonly ISlownikRepository<Produkt> _produktRepository;
 
-        public GenerujDokumentWydaniaCommandHandler(IRezerwacjaRepository rezerwacjaRepository, IMediator mediator, IProduktRepository produktRepository)
+        public GenerujDokumentWydaniaCommandHandler(IRezerwacjaRepository rezerwacjaRepository, IMediator mediator, ISlownikRepository<Produkt> produktRepository)
         {
             _rezerwacjaRepository = rezerwacjaRepository;
             _mediator = mediator;
@@ -29,7 +31,7 @@ namespace MagazynManager.Application.CommandHandlers.Rezerwacje
         {
             var rezerwacje = await _rezerwacjaRepository.GetList(request.PrzedsiebiorstwoId);
             var rezerwacja = rezerwacje.Single(x => x.Id == request.RezerwacjaId);
-            var produkty = await _produktRepository.GetList(request.PrzedsiebiorstwoId);
+            var produkty = await _produktRepository.GetList(new PrzedsiebiorstwoSpecification<Produkt>(request.PrzedsiebiorstwoId));
 
             var magazynId = produkty.First(x => x.Id == rezerwacja.PozycjeRezerwacji.First().ProduktId).MagazynId;
 
