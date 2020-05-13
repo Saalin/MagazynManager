@@ -1,7 +1,7 @@
 ﻿using Dapper;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Domain.Specification;
-using MagazynManager.Infrastructure.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace MagazynManager.Infrastructure.Repositories.Slowniki
 {
     [Repository]
-    public class KategoriaRepository : IKategoriaRepository
+    public class KategoriaRepository : ISlownikRepository<Kategoria>
     {
         private readonly IDbConnectionSource _dbConnectionSource;
 
@@ -19,12 +19,7 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
             _dbConnectionSource = dbConnectionSource;
         }
 
-        public Task<List<Kategoria>> GetList(Guid przedsiebiorstwoId)
-        {
-            return GetKategorieListAsync(new PrzedsiebiorstwoSpecification<Kategoria>(przedsiebiorstwoId));
-        }
-
-        private async Task<List<Kategoria>> GetKategorieListAsync(Specification<Kategoria> specification)
+        public async Task<List<Kategoria>> GetList(Specification<Kategoria> specification)
         {
             var sql = "SELECT Id, Name, PrzedsiebiorstwoId FROM [dbo].[Kategoria] WHERE " + specification.ToSql();
 
@@ -42,13 +37,13 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
             }
         }
 
-        public async Task Delete(Guid id)
+        public async Task Delete(Kategoria kategoria)
         {
             var sql = "DELETE FROM [dbo].[Kategoria] WHERE Id = @Id";
 
             using (var conn = _dbConnectionSource.GetConnection())
             {
-                await conn.ExecuteAsync(sql, new { Id = id });
+                await conn.ExecuteAsync(sql, new { Id = kategoria.Id });
             }
         }
 

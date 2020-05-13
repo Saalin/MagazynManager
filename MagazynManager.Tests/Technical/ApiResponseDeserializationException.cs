@@ -1,13 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using static MagazynManager.Tests.Technical.JsonSerializerUtils;
+﻿using System;
 
 namespace MagazynManager.Tests.Technical
 {
-
     public class ApiResponseDeserializationException : Exception
     {
         public ApiResponseDeserializationException(string message) : base(message)

@@ -21,7 +21,7 @@ namespace MagazynManager.Tests.IntegrationTests
         public void Test_User_Registered()
         {
             var service = (IUserRepository)_factory.Services.GetService(typeof(IUserRepository));
-            var userDto = service.GetUser(new PrzedsiebiorstwoSpecification("admin@admin.com"), UserLoginModel.PrzedsiebiorstwoId);
+            var userDto = service.GetUser(new EmailSpecification("admin@admin.com"), UserLoginModel.PrzedsiebiorstwoId);
             Assert.That(userDto, Is.Not.Null);
             Assert.That(userDto.Email, Is.EqualTo(UserLoginModel.Email));
         }

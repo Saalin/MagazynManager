@@ -64,7 +64,7 @@ namespace MagazynManager.Tests.IntegrationTests
         [SetUp]
         public void SetUpEnv()
         {
-            if(Environment.GetEnvironmentVariable("InMemoryTests") == null)
+            if (Environment.GetEnvironmentVariable("InMemoryTests") == null)
             {
                 RefreshDatabase();
             }

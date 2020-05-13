@@ -46,7 +46,7 @@ namespace MagazynManager.Server
 
             services
                 .AddControllers(options => options.Filters.Add<CatchEmAllExceptionFilter>())
-                .AddNewtonsoftJson(options => 
+                .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());

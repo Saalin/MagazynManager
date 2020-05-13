@@ -7,11 +7,11 @@ using System.Linq.Expressions;
 
 namespace MagazynManager.Infrastructure.Specifications
 {
-    public class PrzedsiebiorstwoSpecification : Specification<User>
+    public class EmailSpecification : Specification<User>
     {
         private readonly string _email;
 
-        public PrzedsiebiorstwoSpecification(string email)
+        public EmailSpecification(string email)
         {
             _email = email;
         }

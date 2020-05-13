@@ -27,7 +27,7 @@ namespace MagazynManager.Tests.UnitTests
 
             _users = new List<User>
             {
-                new User(Guid.Parse("3A7C2E38-385E-4C6A-8BFA-1767A3EBCCCC"), "admin@admin.com", "32548419AC44CF75C9214238F72F72132AE24CE8", 42, "858bfd79-da59-4756-897f-2aa5eb6029da", 
+                new User(Guid.Parse("3A7C2E38-385E-4C6A-8BFA-1767A3EBCCCC"), "admin@admin.com", "32548419AC44CF75C9214238F72F72132AE24CE8", 42, "858bfd79-da59-4756-897f-2aa5eb6029da",
                 standardClaims.Concat(new List<Claim> { new Claim("Permission.Administracja", claimValue), new Claim(ClaimTypes.NameIdentifier, "3A7C2E38-385E-4C6A-8BFA-1767A3EBCCCC") }).ToList(), przedsiebiorstwoId),
                 new User(Guid.Parse("A13A3CB3-928B-4C09-9FD6-739BCE18EDF0"), "demo@demo.com", "423AEC62E306E2EC1D0146C2CD7F44734437E1B3", 18, "3acd21a8-62a8-4829-a144-6c5b30d9b782",
                 standardClaims.Concat(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "A13A3CB3-928B-4C09-9FD6-739BCE18EDF0") }).ToList(), przedsiebiorstwoId)

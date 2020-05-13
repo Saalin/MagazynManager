@@ -26,7 +26,7 @@ namespace MagazynManager.Application.CommandHandlers.Authentication
 
         public Task<AuthResult> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var user = _userRepository.GetUser(new PrzedsiebiorstwoSpecification(request.Email), request.PrzedsiebiorstwoId);
+            var user = _userRepository.GetUser(new EmailSpecification(request.Email), request.PrzedsiebiorstwoId);
             if (user != null && user.ValidatePassword(request.Password))
             {
                 var refreshToken = _tokenStore.GetRefreshToken(user.Id);

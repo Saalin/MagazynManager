@@ -1,6 +1,7 @@
 ﻿using MagazynManager.Application.Commands.Slowniki;
-using MagazynManager.Application.QueryHandlers;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System;
 using System.Linq;
@@ -14,10 +15,10 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
         IRequestHandler<ProduktDeleteCommand, Unit>
     {
         private readonly IProduktRepository _produktRepository;
-        private readonly IKategoriaRepository _kategoriaRepository;
+        private readonly ISlownikRepository<Kategoria> _kategoriaRepository;
         private readonly IJednostkaMiaryRepository _jednostkaMiaryRepository;
 
-        public ProduktCommandHandler(IProduktRepository produktRepository, IKategoriaRepository kategoriaRepository, IJednostkaMiaryRepository jednostkaMiaryRepository)
+        public ProduktCommandHandler(IProduktRepository produktRepository, ISlownikRepository<Kategoria> kategoriaRepository, IJednostkaMiaryRepository jednostkaMiaryRepository)
         {
             _produktRepository = produktRepository;
             _kategoriaRepository = kategoriaRepository;
@@ -26,7 +27,7 @@ namespace MagazynManager.Application.CommandHandlers.Slowniki
 
         public async Task<Guid> Handle(ProduktCreateCommand request, CancellationToken cancellationToken)
         {
-            var kategorie = await _kategoriaRepository.GetList(request.PrzedsiebiorstwoId);
+            var kategorie = await _kategoriaRepository.GetList(new PrzedsiebiorstwoSpecification<Kategoria>(request.PrzedsiebiorstwoId));
             var kategoria = kategorie.FirstOrDefault(x => x.Nazwa == request.Kategoria);
 
             if (kategoria == null)

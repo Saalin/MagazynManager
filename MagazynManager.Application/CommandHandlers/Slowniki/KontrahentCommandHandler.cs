@@ -1,5 +1,4 @@
 ﻿using MagazynManager.Application.Commands.Slowniki;
-using MagazynManager.Application.QueryHandlers;
 using MagazynManager.Domain.Entities.Kontrahent;
 using MediatR;
 using System;

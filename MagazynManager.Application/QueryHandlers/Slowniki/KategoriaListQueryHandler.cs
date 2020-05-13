@@ -1,6 +1,8 @@
 using MagazynManager.Application.Queries.Slowniki;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Infrastructure.Dto.Slowniki;
+using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +14,16 @@ namespace MagazynManager.Application.QueryHandlers.Slowniki
     [QueryHandler]
     public class KategoriaListQueryHandler : IRequestHandler<KategoriaListQuery, List<KategoriaDto>>
     {
-        private readonly IKategoriaRepository _repository;
+        private readonly ISlownikRepository<Kategoria> _repository;
 
-        public KategoriaListQueryHandler(IKategoriaRepository repository)
+        public KategoriaListQueryHandler(ISlownikRepository<Kategoria> repository)
         {
             _repository = repository;
         }
 
         public async Task<List<KategoriaDto>> Handle(KategoriaListQuery request, CancellationToken cancellationToken)
         {
-            var kategorie = await _repository.GetList(request.PrzedsiebiorstwoId);
+            var kategorie = await _repository.GetList(new PrzedsiebiorstwoSpecification<Kategoria>(request.PrzedsiebiorstwoId));
             return kategorie.Select(x => new KategoriaDto
             {
                 Id = x.Id,

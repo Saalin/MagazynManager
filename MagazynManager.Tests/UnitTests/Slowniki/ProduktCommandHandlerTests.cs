@@ -2,6 +2,7 @@ using MagazynManager.Application.CommandHandlers.Slowniki;
 using MagazynManager.Application.Commands.Slowniki;
 using MagazynManager.Application.Queries.Slowniki;
 using MagazynManager.Application.QueryHandlers.Slowniki;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Tests.UnitTests.Fakes;
 using NUnit.Framework;
@@ -19,7 +20,7 @@ namespace MagazynManager.Tests.UnitTests.Slowniki
 
         private IProduktRepository _produktRepository;
         private IJednostkaMiaryRepository _jednostkaMiaryRepository;
-        private IKategoriaRepository _kategoriaRepository;
+        private ISlownikRepository<Kategoria> _kategoriaRepository;
 
         [SetUp]
         public void Setup()

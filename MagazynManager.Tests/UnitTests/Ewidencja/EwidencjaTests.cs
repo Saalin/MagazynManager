@@ -6,6 +6,7 @@ using MagazynManager.Application.Commands.Slowniki;
 using MagazynManager.Application.Queries.Ewidencja;
 using MagazynManager.Application.QueryHandlers.Ewidencja;
 using MagazynManager.Domain.DomainServices;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Dokumenty;
 using MagazynManager.Domain.Entities.Kontrahent;
 using MagazynManager.Domain.Entities.Produkty;
@@ -27,7 +28,7 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
 
         private IProduktRepository _produktRepository;
         private IJednostkaMiaryRepository _jednostkaMiaryRepository;
-        private IKategoriaRepository _kategoriaRepository;
+        private ISlownikRepository<Kategoria> _kategoriaRepository;
         private IDokumentRepository _dokumentRepository;
 
         private Guid KontrahentId { get; set; }

@@ -17,9 +17,9 @@ namespace MagazynManager.Tests.UnitTests
 
         public Task Delete(Guid id)
         {
-            foreach(var m in _magazyny)
+            foreach (var m in _magazyny)
             {
-                if(m.Id == id)
+                if (m.Id == id)
                 {
                     _magazyny.Remove(m);
                 }
