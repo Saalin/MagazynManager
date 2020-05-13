@@ -25,11 +25,6 @@ jobs:
       run: dotnet test --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       env:
         InMemoryTests: "InMemoryTests"
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CodeCovToken }}
-        file: ./MagazynManager.Tests/coverage.opencover.xml
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@master
       with:
