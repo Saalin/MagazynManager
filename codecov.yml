@@ -1,0 +1,2 @@
+ignore:
+  - ./MagazynManager/MagazynManager.Infrastructure/Migrations
