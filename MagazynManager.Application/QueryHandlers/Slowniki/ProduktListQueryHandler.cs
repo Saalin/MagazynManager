@@ -1,8 +1,8 @@
 ﻿using MagazynManager.Application.Queries.Slowniki;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Domain.Specification.Specifications;
 using MagazynManager.Infrastructure.Dto.Slowniki;
-using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace MagazynManager.Application.QueryHandlers.Slowniki
 
         public async Task<List<ProduktDto>> Handle(ProduktListQuery request, CancellationToken cancellationToken)
         {
-            var result = await _produktRepository.GetList(new PrzedsiebiorstwoSpecification<Produkt>(request.PrzedsiebiorstwoId));
+            var result = await _produktRepository.GetList(new PrzedsiebiorstwoIdSpecification<Produkt>(request.PrzedsiebiorstwoId));
             return result.Select(x => new ProduktDto
             {
                 Id = x.Id,

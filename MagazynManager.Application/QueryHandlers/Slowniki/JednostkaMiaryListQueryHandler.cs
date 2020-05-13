@@ -1,8 +1,8 @@
 ﻿using MagazynManager.Application.Queries.Slowniki;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Domain.Specification.Specifications;
 using MagazynManager.Infrastructure.Dto.Slowniki;
-using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace MagazynManager.Application.QueryHandlers.Slowniki
 
         public async Task<List<JednostkaMiaryDto>> Handle(JednostkaMiaryListQuery request, CancellationToken cancellationToken)
         {
-            var jednostkiMiary = await _repository.GetList(new PrzedsiebiorstwoSpecification<JednostkaMiary>(request.PrzedsiebiorstwoId));
+            var jednostkiMiary = await _repository.GetList(new PrzedsiebiorstwoIdSpecification<JednostkaMiary>(request.PrzedsiebiorstwoId));
 
             return jednostkiMiary.Select(x => new JednostkaMiaryDto
             {

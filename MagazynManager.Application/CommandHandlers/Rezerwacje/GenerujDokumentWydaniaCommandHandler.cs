@@ -3,8 +3,8 @@ using MagazynManager.Application.Commands.Rezerwacje;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Domain.Entities.Rezerwacje;
+using MagazynManager.Domain.Specification.Specifications;
 using MagazynManager.Infrastructure.InputModel.Ewidencja;
-using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace MagazynManager.Application.CommandHandlers.Rezerwacje
         {
             var rezerwacje = await _rezerwacjaRepository.GetList(request.PrzedsiebiorstwoId);
             var rezerwacja = rezerwacje.Single(x => x.Id == request.RezerwacjaId);
-            var produkty = await _produktRepository.GetList(new PrzedsiebiorstwoSpecification<Produkt>(request.PrzedsiebiorstwoId));
+            var produkty = await _produktRepository.GetList(new PrzedsiebiorstwoIdSpecification<Produkt>(request.PrzedsiebiorstwoId));
 
             var magazynId = produkty.First(x => x.Id == rezerwacja.PozycjeRezerwacji.First().ProduktId).MagazynId;
 

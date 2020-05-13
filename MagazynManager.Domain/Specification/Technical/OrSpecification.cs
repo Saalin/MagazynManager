@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace MagazynManager.Domain.Specification
+namespace MagazynManager.Domain.Specification.Technical
 {
     public class OrSpecification<T> : Specification<T>
     {
@@ -19,14 +19,12 @@ namespace MagazynManager.Domain.Specification
 
         public override Expression<Func<T, bool>> ToExpression()
         {
-            Expression<Func<T, bool>> leftExpression = _left.ToExpression();
-            Expression<Func<T, bool>> rightExpression = _right.ToExpression();
-
-            BinaryExpression orExpression = Expression.Or(
-                leftExpression.Body, rightExpression.Body);
-
-            return Expression.Lambda<Func<T, bool>>(
-                orExpression, leftExpression.Parameters.Single());
+            var leftExpression = _left.ToExpression();
+            var rightExpression = _right.ToExpression();
+            var paramExpr = Expression.Parameter(typeof(T));
+            var exprBody = Expression.OrElse(leftExpression.Body, rightExpression.Body);
+            exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
+            return Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
         }
 
         public override IEnumerable<Action<DynamicParameters>> GetDynamicParameters()
@@ -36,7 +34,7 @@ namespace MagazynManager.Domain.Specification
 
         public override string ToSql()
         {
-            return $"{_left.ToSql()} OR {_right.ToSql()}";
+            return $"({_left.ToSql()} OR {_right.ToSql()})";
         }
     }
 }

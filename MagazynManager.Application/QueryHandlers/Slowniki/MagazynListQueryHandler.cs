@@ -1,7 +1,7 @@
 ﻿using MagazynManager.Application.Queries.Slowniki;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
-using MagazynManager.Infrastructure.Specifications;
+using MagazynManager.Domain.Specification.Specifications;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;
@@ -21,7 +21,7 @@ namespace MagazynManager.Application.QueryHandlers.Slowniki
 
         public async Task<List<Magazyn>> Handle(MagazynListQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetList(new PrzedsiebiorstwoSpecification<Magazyn>(request.PrzedsiebiorstwoId));
+            return await _repository.GetList(new PrzedsiebiorstwoIdSpecification<Magazyn>(request.PrzedsiebiorstwoId));
         }
     }
 }

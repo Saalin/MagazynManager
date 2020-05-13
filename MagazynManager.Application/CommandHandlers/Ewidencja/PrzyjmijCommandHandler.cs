@@ -1,6 +1,10 @@
 ﻿using MagazynManager.Application.Commands.Ewidencja;
+using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Dokumenty;
 using MagazynManager.Domain.Entities.Slowniki;
+using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
+using MagazynManager.Domain.Specification.Specifications;
+using MagazynManager.Domain.Specification.Technical;
 using MediatR;
 using System;
 using System.Linq;
@@ -13,10 +17,12 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
     public class PrzyjmijCommandHandler : IRequestHandler<PrzyjmijCommand, Guid>
     {
         private readonly IDokumentRepository _dokumentRepository;
+        private readonly ISlownikRepository<Magazyn> _magazynRepository;
 
-        public PrzyjmijCommandHandler(IDokumentRepository dokumentRepository)
+        public PrzyjmijCommandHandler(IDokumentRepository dokumentRepository, ISlownikRepository<Magazyn> magazynRepository)
         {
             _dokumentRepository = dokumentRepository;
+            _magazynRepository = magazynRepository;
         }
 
         public async Task<Guid> Handle(PrzyjmijCommand request, CancellationToken cancellationToken)
@@ -25,11 +31,13 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
                 await GetNumerDokumentuPZ(request.PrzedsiebiorstwoId, request.Model.Data.Year) :
                 await GetNumerDokumentuPW(request.PrzedsiebiorstwoId, request.Model.Data.Year);
 
+            var magazyn = await _magazynRepository.GetList(new IdSpecification<Magazyn, Guid>(request.Model.MagazynId));
+
             var dokument = new Dokument
             {
                 Id = Guid.NewGuid(),
                 Data = request.Model.Data,
-                MagazynId = request.Model.MagazynId,
+                Magazyn = magazyn.Single(),
                 KontrahentId = request.Model.KontrahentId,
                 PozycjeDokumentu = request.Model.Pozycje.Select(x => new PozycjaDokumentu
                 {
@@ -52,7 +60,9 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
 
         private async Task<string> GetNumerDokumentuPW(Guid przedsiebiorstwoId, int rok)
         {
-            var dokumenty = await _dokumentRepository.GetList(TypDokumentu.DokumentPrzyjecia, przedsiebiorstwoId);
+            var spec = new AndSpecification<Dokument>(new PrzedsiebiorstwoIdSpecification<Dokument>(przedsiebiorstwoId),
+                new DokumentTypSpecification(TypDokumentu.DokumentPrzyjecia));
+            var dokumenty = await _dokumentRepository.GetList(spec);
             var liczbaDokumentow = dokumenty.Count(x => x.Data.Year == rok && !x.KontrahentId.HasValue);
 
             return $"PW/{liczbaDokumentow + 1}/{rok}";
@@ -60,7 +70,9 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
 
         private async Task<string> GetNumerDokumentuPZ(Guid przedsiebiorstwoId, int rok)
         {
-            var dokumenty = await _dokumentRepository.GetList(TypDokumentu.DokumentPrzyjecia, przedsiebiorstwoId);
+            var spec = new AndSpecification<Dokument>(new PrzedsiebiorstwoIdSpecification<Dokument>(przedsiebiorstwoId),
+                new DokumentTypSpecification(TypDokumentu.DokumentPrzyjecia));
+            var dokumenty = await _dokumentRepository.GetList(spec);
             var liczbaDokumentow = dokumenty.Count(x => x.Data.Year == rok && x.KontrahentId.HasValue);
 
             return $"PZ/{liczbaDokumentow + 1}/{rok}";

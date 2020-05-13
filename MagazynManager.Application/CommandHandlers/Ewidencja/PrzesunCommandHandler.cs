@@ -4,7 +4,8 @@ using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Dokumenty;
 using MagazynManager.Domain.Entities.Produkty;
 using MagazynManager.Domain.Entities.Slowniki;
-using MagazynManager.Infrastructure.Specifications;
+using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
+using MagazynManager.Domain.Specification.Specifications;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -20,12 +21,15 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
         private readonly IDokumentRepository _dokumentRepository;
         private readonly StanAktualnyService _stanyAktualneService;
         private readonly ISlownikRepository<Produkt> _produktRepository;
+        private readonly ISlownikRepository<Magazyn> _magazynRepository;
 
-        public PrzesunCommandHandler(IDokumentRepository dokumentRepository, StanAktualnyService stanyAktualneService, ISlownikRepository<Produkt> produktRepository)
+        public PrzesunCommandHandler(IDokumentRepository dokumentRepository, StanAktualnyService stanyAktualneService,
+            ISlownikRepository<Produkt> produktRepository, ISlownikRepository<Magazyn> magazynRepository)
         {
             _dokumentRepository = dokumentRepository;
             _stanyAktualneService = stanyAktualneService;
             _produktRepository = produktRepository;
+            _magazynRepository = magazynRepository;
         }
 
         public async Task<Guid> Handle(PrzesunCommand request, CancellationToken cancellationToken)
@@ -34,7 +38,7 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
             var orderedStanyAktualne = stanyAktualne.Where(x => x.Ilosc > 0)
                 .OrderBy(x => x.CenaNetto).ThenBy(x => x.CenaBrutto).ToList();
 
-            var produkty = await _produktRepository.GetList(new PrzedsiebiorstwoSpecification<Produkt>(request.PrzedsiebiorstwoId));
+            var produkty = await _produktRepository.GetList(new PrzedsiebiorstwoIdSpecification<Produkt>(request.PrzedsiebiorstwoId));
 
             var pozycjeDokumentuWydania = new List<PozycjaDokumentu>();
             var pozycjeDokumentuPrzyjecia = new List<PozycjaDokumentu>();
@@ -82,11 +86,14 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
                 }
             }
 
+            var magazynWydajacy = await _magazynRepository.GetList(new IdSpecification<Magazyn, Guid>(request.Model.MagazynWydajacyId));
+            var magazynPrzyjmujacy = await _magazynRepository.GetList(new IdSpecification<Magazyn, Guid>(request.Model.MagazynPrzyjmujacyId));
+
             var dokumentMinus = new Dokument
             {
                 Id = Guid.NewGuid(),
                 Data = request.Model.Data,
-                MagazynId = request.Model.MagazynWydajacyId,
+                Magazyn = magazynWydajacy.Single(),
                 Numer = $"MM-/{await GetLicznikDokumentu(request.PrzedsiebiorstwoId, request.Model.Data.Year)}/{request.Model.Data.Year}",
                 TypDokumentu = TypDokumentu.PrzesuniecieMiedzymagazynoweUjemne,
                 PozycjeDokumentu = pozycjeDokumentuWydania
@@ -96,7 +103,7 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
             {
                 Id = Guid.NewGuid(),
                 Data = request.Model.Data,
-                MagazynId = request.Model.MagazynPrzyjmujacyId,
+                Magazyn = magazynPrzyjmujacy.Single(),
                 Numer = $"MM+/{await GetLicznikDokumentu(request.PrzedsiebiorstwoId, request.Model.Data.Year)}/{request.Model.Data.Year}",
                 TypDokumentu = TypDokumentu.PrzesuniecieMiedzymagazynoweDodatnie,
                 PozycjeDokumentu = pozycjeDokumentuPrzyjecia
@@ -131,7 +138,8 @@ namespace MagazynManager.Application.CommandHandlers.Ewidencja
 
         private async Task<int> GetLicznikDokumentu(Guid przedsiebiorstwoId, int rok)
         {
-            var dokumenty = await _dokumentRepository.GetList(TypDokumentu.PrzesuniecieMiedzymagazynoweUjemne, przedsiebiorstwoId);
+            var dokumenty = await _dokumentRepository.GetList(new PrzedsiebiorstwoIdSpecification<Dokument>(przedsiebiorstwoId).And(
+                new DokumentTypSpecification(TypDokumentu.DokumentPrzyjecia)));
             return dokumenty.Count(x => x.Data.Year == rok) + 1;
         }
     }

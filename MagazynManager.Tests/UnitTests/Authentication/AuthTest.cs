@@ -1,8 +1,8 @@
 ﻿using MagazynManager.Application.CommandHandlers.Authentication;
 using MagazynManager.Application.Commands.Authentication;
 using MagazynManager.Domain.Entities.Uzytkownicy;
+using MagazynManager.Domain.Specification.Specifications;
 using MagazynManager.Infrastructure.InputModel.Authentication;
-using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using NSubstitute;
 using NUnit.Framework;

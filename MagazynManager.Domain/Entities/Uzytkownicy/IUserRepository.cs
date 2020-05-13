@@ -1,4 +1,4 @@
-﻿using MagazynManager.Domain.Specification;
+﻿using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

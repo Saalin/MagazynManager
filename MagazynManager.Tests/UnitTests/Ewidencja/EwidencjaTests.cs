@@ -10,6 +10,7 @@ using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Dokumenty;
 using MagazynManager.Domain.Entities.Kontrahent;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
 using MagazynManager.Tests.ObjectMothers;
 using MagazynManager.Tests.UnitTests.Fakes;
 using NUnit.Framework;
@@ -24,14 +25,14 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
     [TestFixture]
     public class EwidencjaTests : UnitTest
     {
-        private Guid MagazynId = Guid.NewGuid();
-
         private ISlownikRepository<Produkt> _produktRepository;
         private ISlownikRepository<JednostkaMiary> _jednostkaMiaryRepository;
         private ISlownikRepository<Kategoria> _kategoriaRepository;
+        private ISlownikRepository<Magazyn> _magazynRepository;
         private IDokumentRepository _dokumentRepository;
 
         private Guid KontrahentId { get; set; }
+        private Guid MagazynId { get; set; }
 
         [SetUp]
         public void Setup()
@@ -40,6 +41,15 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
             _jednostkaMiaryRepository = new InMemoryJednostkaMiaryRepository();
             _kategoriaRepository = new InMemoryKategoriaRepository();
             _dokumentRepository = new InMemoryDokumentRepository();
+            _magazynRepository = new InMemoryMagazynRepository();
+
+            MagazynId = _magazynRepository.Save(new Magazyn
+            {
+                Id = Guid.NewGuid(),
+                Nazwa = "TestMagazyn",
+                Skrot = "TM",
+                PrzedsiebiorstwoId = PrzedsiebiorstwoId
+            }).Result;
 
             var kontrahentRepository = new InMemoryKontrahentRepository();
             KontrahentId = kontrahentRepository.Save(new Kontrahent
@@ -68,7 +78,7 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
             var produkt = ProduktObjectMother.GetProdukt(MagazynId);
             var produktId = await produktAddCommandHandler.Handle(new ProduktCreateCommand(produkt.Name, produkt.ShortName, produkt.JednostkaMiary, produkt.Kategoria, MagazynId, PrzedsiebiorstwoId), new CancellationToken());
 
-            var commandHandler = new PrzyjmijCommandHandler(_dokumentRepository);
+            var commandHandler = new PrzyjmijCommandHandler(_dokumentRepository, _magazynRepository);
             var dokumentPrzyjecia = DokumentObjectMother.GetDokumentPrzyjeciaZJednaPozycja(MagazynId, produktId, 42, kontrahent ? KontrahentId : (Guid?)null);
             await commandHandler.Handle(new PrzyjmijCommand(PrzedsiebiorstwoId, dokumentPrzyjecia), new CancellationToken());
 
@@ -96,7 +106,7 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
 
             var stanProduktuPrzedWydaniem = stanAktualnyList.First();
 
-            var commandHandler = new WydajCommandHandler(_dokumentRepository, new StanAktualnyService(_dokumentRepository));
+            var commandHandler = new WydajCommandHandler(_dokumentRepository, new StanAktualnyService(_dokumentRepository), _magazynRepository);
             var dokumentWydania = DokumentObjectMother.GetDokumentWydaniaZJednaPozycja(MagazynId, stanProduktuPrzedWydaniem.ProduktId, 10, kontrahent ? KontrahentId : (Guid?)null);
             await commandHandler.Handle(new WydajCommand(PrzedsiebiorstwoId, dokumentWydania), new CancellationToken());
 
@@ -121,7 +131,7 @@ namespace MagazynManager.Tests.UnitTests.Ewidencja
 
             var stanProduktuPrzedWydaniem = stanAktualnyList.First();
 
-            var commandHandler = new WydajCommandHandler(_dokumentRepository, new StanAktualnyService(_dokumentRepository));
+            var commandHandler = new WydajCommandHandler(_dokumentRepository, new StanAktualnyService(_dokumentRepository), _magazynRepository);
 
             var dokumentWydajacyZaDuzo = DokumentObjectMother.GetDokumentWydaniaZJednaPozycja(MagazynId, stanProduktuPrzedWydaniem.ProduktId, stanProduktuPrzedWydaniem.Ilosc + 10, kontrahent ? KontrahentId : (Guid?)null);
             Assert.ThrowsAsync<BussinessException>(async () =>

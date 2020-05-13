@@ -1,5 +1,7 @@
 ﻿using MagazynManager.Application.Queries.Ewidencja;
 using MagazynManager.Domain.Entities.Dokumenty;
+using MagazynManager.Domain.Specification.Specifications;
+using MagazynManager.Domain.Specification.Technical;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,7 +21,9 @@ namespace MagazynManager.Application.QueryHandlers.Ewidencja
 
         public async Task<List<Dokument>> Handle(DokumentPrzyjeciaListQuery request, CancellationToken cancellationToken)
         {
-            return await _dokumentRepository.GetList(TypDokumentu.DokumentPrzyjecia, request.PrzedsiebiorstwoId);
+            var spec = new AndSpecification<Dokument>(new PrzedsiebiorstwoIdSpecification<Dokument>(request.PrzedsiebiorstwoId),
+                new DokumentTypSpecification(TypDokumentu.DokumentPrzyjecia));
+            return await _dokumentRepository.GetList(spec);
         }
     }
 }

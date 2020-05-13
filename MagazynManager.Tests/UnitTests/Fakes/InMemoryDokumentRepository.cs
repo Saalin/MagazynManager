@@ -1,4 +1,5 @@
 ﻿using MagazynManager.Domain.Entities.Dokumenty;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,9 @@ namespace MagazynManager.Tests.UnitTests
             _dokumenty = new List<Dokument>();
         }
 
-        public Task<List<Dokument>> GetList(TypDokumentu typ, Guid przedsiebiorstwoId)
+        public Task<List<Dokument>> GetList(Specification<Dokument> specification)
         {
-            return Task.FromResult(_dokumenty.Where(x => x.TypDokumentu == typ).ToList());
+            return Task.FromResult(_dokumenty.AsQueryable().Where(specification.ToExpression()).ToList());
         }
 
         public Task<Guid> Save(Dokument dokument)

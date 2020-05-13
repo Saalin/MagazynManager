@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace MagazynManager.Domain.Specification
+namespace MagazynManager.Domain.Specification.Technical
 {
     public class AndSpecification<T> : Specification<T>
     {
@@ -22,11 +22,10 @@ namespace MagazynManager.Domain.Specification
             Expression<Func<T, bool>> leftExpression = _left.ToExpression();
             Expression<Func<T, bool>> rightExpression = _right.ToExpression();
 
-            BinaryExpression andExpression = Expression.AndAlso(
-                leftExpression.Body, rightExpression.Body);
-
-            return Expression.Lambda<Func<T, bool>>(
-                andExpression, leftExpression.Parameters.Single());
+            var paramExpr = Expression.Parameter(typeof(T));
+            var exprBody = Expression.AndAlso(leftExpression.Body, rightExpression.Body);
+            exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
+            return Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
         }
 
         public override IEnumerable<Action<DynamicParameters>> GetDynamicParameters()
@@ -36,7 +35,7 @@ namespace MagazynManager.Domain.Specification
 
         public override string ToSql()
         {
-            return $"{_left.ToSql()} AND {_right.ToSql()}";
+            return $"({_left.ToSql()} AND {_right.ToSql()})";
         }
     }
 }

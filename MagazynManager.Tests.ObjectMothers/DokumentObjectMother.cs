@@ -7,7 +7,7 @@ namespace MagazynManager.Tests.ObjectMothers
 {
     public static class DokumentObjectMother
     {
-        public static PrzyjecieCreateModel GetDokumentPrzyjeciaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc, Guid? kontrahentId )
+        public static PrzyjecieCreateModel GetDokumentPrzyjeciaZJednaPozycja(Guid magazynId, Guid produktId, decimal ilosc, Guid? kontrahentId)
         {
             return new PrzyjecieCreateModel
             {

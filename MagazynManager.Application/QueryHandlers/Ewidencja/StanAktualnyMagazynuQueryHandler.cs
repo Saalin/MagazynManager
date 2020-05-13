@@ -2,8 +2,8 @@
 using MagazynManager.Domain.DomainServices;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
+using MagazynManager.Domain.Specification.Specifications;
 using MagazynManager.Infrastructure.Dto.Ewidencja;
-using MagazynManager.Infrastructure.Specifications;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace MagazynManager.Application.QueryHandlers.Ewidencja
 
         public async Task<List<StanAktualnyDto>> Handle(StanAktualnyMagazynuQuery request, CancellationToken cancellationToken)
         {
-            var listaProduktow = await _produktRepository.GetList(new PrzedsiebiorstwoSpecification<Produkt>(request.PrzedsiebiorstwoId));
+            var listaProduktow = await _produktRepository.GetList(new PrzedsiebiorstwoIdSpecification<Produkt>(request.PrzedsiebiorstwoId));
             var stanAktualny = await wydanieService.GetStanMagazynu(request.MagazynId, request.PrzedsiebiorstwoId);
 
             return stanAktualny.GroupBy(x => x.ProduktId).Select((x, idx) => new StanAktualnyDto

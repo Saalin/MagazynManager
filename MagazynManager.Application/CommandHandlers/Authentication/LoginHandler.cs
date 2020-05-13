@@ -1,7 +1,7 @@
 ﻿using MagazynManager.Application.Commands.Authentication;
 using MagazynManager.Application.DataProviders;
 using MagazynManager.Domain.Entities.Uzytkownicy;
-using MagazynManager.Infrastructure.Specifications;
+using MagazynManager.Domain.Specification.Specifications;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;

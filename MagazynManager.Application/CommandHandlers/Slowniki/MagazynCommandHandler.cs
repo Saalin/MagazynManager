@@ -1,7 +1,7 @@
 ﻿using MagazynManager.Application.Commands.Slowniki;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
-using MagazynManager.Infrastructure.Specifications;
+using MagazynManager.Domain.Specification.Specifications;
 using MediatR;
 using System;
 using System.Linq;

@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,15 +60,15 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
             }
         }
 
-        public async Task<Guid> Save(Produkt produkt)
+        public async Task<Guid> Save(Produkt entity)
         {
             var sqlInsert = "INSERT INTO dbo.Produkt (Id, ShortName, Name, KategoriaId, UnitId, MagazynId) VALUES (@Id, @ShortName, @Name, @KategoriaId, @UnitId, @MagazynId)";
 
             using (var conn = _dbConnectionSource.GetConnection())
             {
                 await conn.ExecuteAsync(sqlInsert,
-                    new { Id = produkt.Id, ShortName = produkt.Skrot, Name = produkt.Nazwa, KategoriaId = produkt.Kategoria.Id, UnitId = produkt.JednostkaMiary.Id, MagazynId = produkt.MagazynId });
-                return produkt.Id;
+                    new { Id = entity.Id, ShortName = entity.Skrot, Name = entity.Nazwa, KategoriaId = entity.Kategoria.Id, UnitId = entity.JednostkaMiary.Id, MagazynId = entity.MagazynId });
+                return entity.Id;
             }
         }
     }

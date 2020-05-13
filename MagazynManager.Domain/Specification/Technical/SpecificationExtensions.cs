@@ -1,6 +1,6 @@
 ﻿using Dapper;
 
-namespace MagazynManager.Domain.Specification
+namespace MagazynManager.Domain.Specification.Technical
 {
     public static class SpecificationExtensions
     {

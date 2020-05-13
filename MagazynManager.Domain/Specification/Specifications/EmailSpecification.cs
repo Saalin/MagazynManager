@@ -1,11 +1,11 @@
 ﻿using Dapper;
 using MagazynManager.Domain.Entities.Uzytkownicy;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace MagazynManager.Infrastructure.Specifications
+namespace MagazynManager.Domain.Specification.Specifications
 {
     public class EmailSpecification : Specification<User>
     {

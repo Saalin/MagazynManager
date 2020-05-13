@@ -1,6 +1,6 @@
 ﻿using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +19,9 @@ namespace MagazynManager.Tests.UnitTests.Fakes
 
         public Task Delete(JednostkaMiary entity)
         {
-            foreach(var j in _jednostkiMiary)
+            foreach (var j in _jednostkiMiary)
             {
-                if(j.Id == entity.Id)
+                if (j.Id == entity.Id)
                 {
                     _jednostkiMiary.Remove(j);
                     return Task.CompletedTask;
@@ -36,10 +36,10 @@ namespace MagazynManager.Tests.UnitTests.Fakes
             return Task.FromResult(_jednostkiMiary.Where(specification.ToExpression().Compile()).ToList());
         }
 
-        public Task<Guid> Save(JednostkaMiary jednostkaMiary)
+        public Task<Guid> Save(JednostkaMiary entity)
         {
-            _jednostkiMiary.Add(jednostkaMiary);
-            return Task.FromResult(jednostkaMiary.Id);
+            _jednostkiMiary.Add(entity);
+            return Task.FromResult(entity.Id);
         }
     }
 }

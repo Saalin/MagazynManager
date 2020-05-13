@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +18,7 @@ namespace MagazynManager.Infrastructure.Repositories.Slowniki
         {
             _dbConnectionSource = dbConnectionSource;
         }
+
         public async Task<List<Magazyn>> GetList(Specification<Magazyn> specification)
         {
             var sql = "SELECT Id, Skrot, Nazwa, PrzedsiebiorstwoId FROM [dbo].[Magazyn] WHERE " + specification.ToSql();

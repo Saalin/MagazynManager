@@ -1,6 +1,6 @@
 ﻿using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.Produkty;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,17 +1,17 @@
 ﻿using Dapper;
 using MagazynManager.Domain.Entities.Produkty;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace MagazynManager.Infrastructure.Specifications
+namespace MagazynManager.Domain.Specification.Specifications
 {
-    public class PrzedsiebiorstwoSpecification<T> : Specification<T> where T : IPrzedsiebiorstwo
+    public class PrzedsiebiorstwoIdSpecification<T> : Specification<T> where T : IPrzedsiebiorstwo
     {
         private readonly Guid _przedsiebiorstwoId;
 
-        public PrzedsiebiorstwoSpecification(Guid id)
+        public PrzedsiebiorstwoIdSpecification(Guid id)
         {
             _przedsiebiorstwoId = id;
         }

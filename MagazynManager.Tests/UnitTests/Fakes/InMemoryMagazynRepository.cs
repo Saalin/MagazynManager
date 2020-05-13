@@ -1,6 +1,6 @@
 ﻿using MagazynManager.Domain.Entities;
 using MagazynManager.Domain.Entities.StukturaOrganizacyjna;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,10 +35,10 @@ namespace MagazynManager.Tests.UnitTests
             return Task.FromResult(_magazyny.Where(specification.ToExpression().Compile()).ToList());
         }
 
-        public Task<Guid> Save(Magazyn magazyn)
+        public Task<Guid> Save(Magazyn entity)
         {
-            _magazyny.Add(magazyn);
-            return Task.FromResult(magazyn.Id);
+            _magazyny.Add(entity);
+            return Task.FromResult(entity.Id);
         }
     }
 }

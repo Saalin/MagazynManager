@@ -1,6 +1,6 @@
 using MagazynManager.Domain.Entities.Uzytkownicy;
+using MagazynManager.Domain.Specification.Specifications;
 using MagazynManager.Infrastructure.InputModel.Authentication;
-using MagazynManager.Infrastructure.Specifications;
 using MagazynManager.Tests.ObjectMothers;
 using Newtonsoft.Json;
 using NodaTime;

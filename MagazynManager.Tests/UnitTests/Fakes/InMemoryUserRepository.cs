@@ -1,5 +1,5 @@
 ﻿using MagazynManager.Domain.Entities.Uzytkownicy;
-using MagazynManager.Domain.Specification;
+using MagazynManager.Domain.Specification.Technical;
 using System;
 using System.Collections.Generic;
 using System.Linq;
